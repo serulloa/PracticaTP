@@ -1,11 +1,7 @@
-/**
- * 
- */
 package tp.pr1;
 
 /**
  * @author Sergio Ulloa
- *
  */
 public class Position {
 
@@ -32,11 +28,11 @@ public class Position {
 	
 	/**
 	 * Dependiendo del valor de direction, x e y toman determinados valores que luego
-	 * se suman al valor de Position actual para acceder a la siguiente posición. 
+	 * se suman al valor de Position actual para acceder a la siguiente posición
 	 * 
-	 * @param direction es un enumerado que representa la dirección
-	 * @param n es el tamaño del tablero
-	 * @return la posición vecina según la dirección dada, si hay algún error devuelve
+	 * @param direction Es un enumerado que representa la dirección
+	 * @param n Es el tamaño del tablero
+	 * @return La posición vecina según la dirección dada, si hay algún error devuelve
 	 * (-1, -1)
 	 * 
 	 */
@@ -50,14 +46,17 @@ public class Position {
 			{
 				y = 1;
 			}
+				break;
 			case DOWN:
 			{
 				y = -1;
 			}
+				break;
 			case LEFT:
 			{
 				x = -1;
 			}
+				break;
 			case RIGHT:
 			{
 				x = 1;
