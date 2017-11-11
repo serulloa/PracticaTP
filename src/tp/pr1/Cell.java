@@ -38,7 +38,7 @@ public class Cell {
 	}
 	
 	/**
-	 * Comprueba si las dos celdas pueden fusionarse
+	 * Comprueba si las dos celdas pueden fusionarse y, en caso positivo, las fusiona
 	 * 
 	 * @param neighbour Es la celda vecina
 	 * @return True si las dos celdas pueden fusionarse, false en caso contrario
@@ -46,8 +46,11 @@ public class Cell {
 	public boolean doMerge(Cell neighbour) {
 		boolean ret = false;
 		
-		if(neighbour.value == value)
+		if(neighbour.value == value) {
 			ret = true;
+			value += neighbour.value;
+			neighbour.value = 0;
+		}
 		
 		return ret;
 	}
