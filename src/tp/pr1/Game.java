@@ -30,6 +30,14 @@ public class Game {
 		this.highest = 0;
 		
 		this.board = new Board(size);
+		
+		for(int i = 0; i < initCells; i++) {
+			int aux = nextValue();
+			board.newCell(aux, myRandom);
+			
+			if(aux > highest)
+				highest = aux;
+		}
 	}
 	
 	// ================================================================================
@@ -81,7 +89,11 @@ public class Game {
 		board = new Board(size);
 		
 		for(int i = 0; i < initCells; i++) {
-			board.newCell(nextValue(), myRandom);
+			int aux = nextValue();
+			board.newCell(aux, myRandom);
+			
+			if(aux > highest)
+				highest = aux;
 		}
 	}
 	
