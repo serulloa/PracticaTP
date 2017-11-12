@@ -41,7 +41,9 @@ public class Controller {
 			if(!error)
 				System.out.println(game.toString());
 			error = false;
-			System.out.println("Command > ");
+			
+			if(game.isFinished()) System.out.println("Game is finished, type 'RESET' to play another game");
+			System.out.print("Command > ");
 			
 			command = parseIn();
 			if(command.length < 0 || command.length > 2)
@@ -118,15 +120,7 @@ public class Controller {
 	 * @return El array de strings previamente mencionado
 	 */
 	private String[] parseIn() {
-		String[] ret = null;
-		String word = "";
-		
-		while(in.hasNext()) {
-			word = in.next();
-			
-			if(word != " ")
-				ret[ret.length] = word;
-		}
+		String[] ret = in.nextLine().toUpperCase().split(" ", -1);
 		
 		return ret;
 	}

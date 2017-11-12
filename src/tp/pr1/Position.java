@@ -75,6 +75,13 @@ public class Position {
 
 		return ret;
 	}
+	
+	public boolean equals(Position pos) {
+		boolean ok = false;
+		
+		if(row == pos.row && column == pos.column) ok = true;
+		return ok;
+	}
 
 	// ================================================================================
 	// Getters y Setters

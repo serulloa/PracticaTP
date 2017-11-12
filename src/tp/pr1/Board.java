@@ -15,6 +15,7 @@ public class Board {
 
 	private Cell[][] board; // Array bidimensional de celdas
 	private int boardSize; 	// Tamaño del tablero (dimensión)
+	private boolean full;
 	
 	// ================================================================================
 	// Constructores
@@ -22,6 +23,8 @@ public class Board {
 	
 	public Board(int boardSize) {
 		this.boardSize = boardSize;
+		this.board = new Cell[boardSize][boardSize];
+		this.full = false;
 		
 		for(int i = 0; i < boardSize; i++) {
 			for(int j = 0; j < boardSize; j++) 
@@ -54,13 +57,20 @@ public class Board {
 	 */
 	public MoveResults executeMove(Direction dir) {
 		Board auxBoard = new Board(boardSize);
+		MoveResults ret = new MoveResults(false, 0, 0);
 		
 		switch (dir) {
 			case UP:
 			{
 				for(int i = 0; i < boardSize; i++) {
-					for(int j = 0; j < boardSize; i++) {
-						auxBoard.board[(boardSize-1)-j][i] = new Cell(board[i][j].getValue());
+					for(int j = 0; j < boardSize; j++) {
+						auxBoard.board[j][(boardSize-1)-i] = new Cell(board[i][j].getValue());
+					}
+				}
+				ret = move(auxBoard);
+				for(int i = 0; i < boardSize; i++) {
+					for(int j = 0; j < boardSize; j++) {
+						board[(boardSize-1)-j][i] = auxBoard.board[i][j];
 					}
 				}
 			}
@@ -68,8 +78,14 @@ public class Board {
 			case DOWN:
 			{
 				for(int i = 0; i < boardSize; i++) {
-					for(int j = 0; j < boardSize; i++) {
-						auxBoard.board[j][(boardSize-1)-i] = new Cell(board[i][j].getValue());
+					for(int j = 0; j < boardSize; j++) {
+						auxBoard.board[(boardSize-1)-j][i] = new Cell(board[i][j].getValue());
+					}
+				}
+				ret = move(auxBoard);
+				for(int i = 0; i < boardSize; i++) {
+					for(int j = 0; j < boardSize; j++) {
+						board[j][(boardSize-1)-i] = auxBoard.board[i][j];
 					}
 				}
 			}
@@ -77,17 +93,25 @@ public class Board {
 			case LEFT:
 			{
 				for(int i = 0; i < boardSize; i++) {
-					for(int j = 0; j < boardSize; i++) {
-						auxBoard.board[(boardSize-1)-i][j] = new Cell(board[i][j].getValue());
+					for(int j = 0; j < boardSize; j++) {
+						auxBoard.board[i][(boardSize-1)-j] = new Cell(board[i][j].getValue());
+					}
+				}
+				ret = move(auxBoard);
+				for(int i = 0; i < boardSize; i++) {
+					for(int j = 0; j < boardSize; j++) {
+						board[i][(boardSize-1)-j] = auxBoard.board[i][j];
 					}
 				}
 			}
 				break;
 			case RIGHT:
+			{
+				ret = move(this);
+			}
 				break;	
 		}
 		
-		MoveResults ret = move(auxBoard);
 		return ret;
 	}
 	
@@ -102,7 +126,7 @@ public class Board {
 		int points = 0;
 		int max = 0;
 		
-		for(int i = auxBoard.boardSize-1; i < auxBoard.boardSize; i++) {
+		for(int i = 0; i < auxBoard.boardSize; i++) {
 			Position right = new Position(i, auxBoard.boardSize-1);
 			Cell rightCell = auxBoard.board[right.getRow()][right.getColumn()];
 					
@@ -116,8 +140,8 @@ public class Board {
 					max = posCell.getValue();
 				
 				if(rightCell.isEmpty()) {
-					setCell(right, posCell.getValue());
-					setCell(pos, 0);
+					auxBoard.setCell(right, posCell.getValue());
+					auxBoard.setCell(pos, 0);
 					moved = true;
 				}
 				
@@ -131,9 +155,10 @@ public class Board {
 						}
 						
 						else {
-							if(right.neighbour(Direction.LEFT, auxBoard.boardSize) != pos) {
-								setCell(right.neighbour(Direction.LEFT, auxBoard.boardSize), posCell.getValue());
-								setCell(pos, 0);
+							Position auxPos = right.neighbour(Direction.LEFT, auxBoard.boardSize);
+							if(!auxPos.equals(pos)) {
+								auxBoard.setCell(right.neighbour(Direction.LEFT, auxBoard.boardSize), posCell.getValue());
+								auxBoard.setCell(pos, 0);
 								moved = true;
 							}
 						}
@@ -157,7 +182,7 @@ public class Board {
 		
 		// Barra superior
 		for(int i = 0; i < boardSize; i++)
-			ret = MyStringUtils.repeat(hDelimiter, (cellSize+2)*boardSize);
+			ret = MyStringUtils.repeat(" " + MyStringUtils.repeat(hDelimiter, cellSize), boardSize);
 		
 		ret += "\n";
 		
@@ -170,7 +195,7 @@ public class Board {
 			}
 			
 			ret += "\n";
-			ret += MyStringUtils.repeat(hDelimiter, (cellSize+2)*boardSize);
+			ret += MyStringUtils.repeat(" " + MyStringUtils.repeat(hDelimiter, cellSize), boardSize);
 			ret += "\n";
 		}
 		
@@ -185,14 +210,17 @@ public class Board {
 	 * @param random Aleatoriedad
 	 */
 	public void newCell(int value, Random random) {
-		Position[] res = emptyCells();
+		Position[] positions = new Position[boardSize*boardSize]; 
+		int cont = emptyCells(positions);
 		int index = 0;
 		Position pos;
 		
-		index = random.nextInt(res.length);
-		pos = res[index];
-		
-		setCell(pos, value);
+		if(cont <= 0) full = true;
+		else {
+			index = random.nextInt(cont);
+			pos = positions[index];
+			setCell(pos, value);
+		}
 	}
 	
 	/**
@@ -201,16 +229,22 @@ public class Board {
 	 * 
 	 * @return Un array de Positions dónde las celdas están vacías
 	 */
-	private Position[] emptyCells(){
-		Position[] res = null;
+	private int emptyCells(Position[] positions){
+		int cont = 0;
 		
 		for(int i = 0; i < boardSize; i++) {
 			for(int j = 0; j < boardSize; j++) {
-				if(board[i][j].isEmpty())
-					res[res.length] = new Position(i, j);
+				if(board[i][j].isEmpty()) {
+					positions[cont] = new Position(i, j);
+					cont++;
+				}
 			}
 		}
 		
-		return res;
+		return cont;
+	}
+
+	public boolean isFull() {
+		return full;
 	}
 }

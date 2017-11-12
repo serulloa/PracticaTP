@@ -17,6 +17,7 @@ public class Game {
 	private Random myRandom; 	// Comportamiento aleatorio del juego
 	private int score;
 	private int highest;
+	private boolean finished;
 	
 	// ================================================================================
 	// Constructores
@@ -28,6 +29,7 @@ public class Game {
 		this.myRandom = myRandom;
 		this.score = 0;
 		this.highest = 0;
+		this.finished = false;
 		
 		this.board = new Board(size);
 		
@@ -51,13 +53,17 @@ public class Game {
 	 * @param dir Es la dirección del movimiento
 	 */
 	public void move(Direction dir) {
-		MoveResults results = board.executeMove(dir);
-		
-		score += results.getPoints();
-		highest = results.getMaxToken();
-		
-		if(results.isMoved())
+		if(!board.isFull() && !finished) {
+			MoveResults results = board.executeMove(dir);
+			
+			score += results.getPoints();
+			highest = results.getMaxToken();
+			if(highest >= 2048) finished = true;
+			
 			board.newCell(nextValue(), myRandom);
+		}
+		else
+			finished = true;
 	}
 	
 	/**
@@ -70,7 +76,7 @@ public class Game {
 	private int nextValue() {
 		int bound = 9;
 		
-		int ret = myRandom.nextInt(bound);
+		int ret = myRandom.nextInt(bound) + 1;
 		
 		if(ret > 1)
 			ret = 2;
@@ -87,6 +93,7 @@ public class Game {
 		score = 0;
 		highest = 0;
 		board = new Board(size);
+		finished = false;
 		
 		for(int i = 0; i < initCells; i++) {
 			int aux = nextValue();
@@ -102,8 +109,14 @@ public class Game {
 		
 		ret += board.toString();
 		ret += "highest: " + String.valueOf(highest);
-		ret += "		score: " + String.valueOf(score) + "\n";	
+		ret += "		score: " + String.valueOf(score) + "\n";
+		if(board.isFull()) ret += "Game over\n";
+		if(highest >= 2048) ret += "Well done!\n";
 		
 		return ret;
+	}
+	
+	public boolean isFinished() {
+		return finished;
 	}
 }
