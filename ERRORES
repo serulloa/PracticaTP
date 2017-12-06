@@ -1,0 +1,4 @@
+1. No colocar una nueva ficha cuando no hay movimiento.
+
+2. Terminar un turno antes si no hay movs disponibles, es decir, no hace falta realizar
+	un último movimiento.
