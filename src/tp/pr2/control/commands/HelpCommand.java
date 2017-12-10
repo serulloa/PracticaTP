@@ -20,5 +20,6 @@ public class HelpCommand extends NoParamsCommand {
 	@Override
 	public void execute(Game game, Controller controller) {
 		controller.help();
+		controller.setNoPrintGameState();
 	}
 }

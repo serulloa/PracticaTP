@@ -1,7 +1,6 @@
 package tp.pr2.control.commands;
 
 import tp.pr2.control.Controller;
-import tp.pr2.logic.multigames.Game;
 
 /**
  * @author Sergio Ulloa
@@ -22,10 +21,31 @@ public abstract class NoParamsCommand extends Command {
 	
 	@Override
 	public Command parse(String[] commandWords, Controller controller) {
-		// TODO Auto-generated method stub
+		Command ret = null;
 		
+		if(commandWords.length == 1) {
+			switch (commandWords[0]) {
+				case "EXIT":
+				{
+					ret = new ExitCommand();
+					break;
+				}
+				case "HELP":
+				{
+					ret = new HelpCommand();
+					break;
+				}
+				case "RESET":
+				{
+					ret = new ResetCommand();
+					break;
+				}
+				default:
+					controller.setNoPrintGameState();
+			}
+		}
 		
-		return null;
+		return ret;
 	}
 
 }

@@ -2,8 +2,8 @@ package tp.pr2.control;
 
 import java.util.Scanner;
 
+import tp.pr2.control.commands.Command;
 import tp.pr2.control.commands.CommandParser;
-import tp.pr2.logic.Direction;
 import tp.pr2.logic.multigames.Game;
 
 /**
@@ -15,9 +15,10 @@ public class Controller {
 	// Atributos
 	// ================================================================================
 	
-	private Game game; 	// Partida
-	private Scanner in; // Para leer de la consola las órdenes del usuario
-	private boolean finished;
+	private Game game; 				// Partida
+	private Scanner in; 			// Para leer de la consola las órdenes del usuario
+	private boolean finished; 		// Indica si se ha ejecutado el comando exit
+	private boolean printGameState;	// Indica si se debe imprimir el tablero en la sig interacción
 	
 	// ================================================================================
 	// Constructores
@@ -27,6 +28,7 @@ public class Controller {
 		this.game = game;
 		this.in = in;
 		this.finished = false;
+		this.printGameState = true;
 	}
 	
 	// ================================================================================
@@ -39,81 +41,21 @@ public class Controller {
 	 * error por pantalla
 	 */
 	public void run() {
-		boolean error = false;
-		String[] command;
+		Command command;
 		
 		while(!finished) {
-			if(!error)
+			if(printGameState)
 				System.out.println(game.toString());
-			error = false;
+			printGameState = true;
 			
 			if(game.isLosen()) System.out.println("Game is finished, type 'RESET' to play another game");
 			System.out.print("Command > ");
 			
 			command = parseIn();
-			if(command.length < 0 || command.length > 2)
-				command[0] = "ERROR";
-			
-			switch(command[0]) {
-				case "MOVE":
-				{
-					if(command.length == 2) {
-						switch(command[1]) {
-							case "UP":
-							{
-								game.move(Direction.UP);
-								break;
-							}
-							case "DOWN":
-							{
-								game.move(Direction.DOWN);
-								break;
-							}
-							case "LEFT":
-							{
-								game.move(Direction.LEFT);
-								break;
-							}
-							case "RIGHT":
-							{
-								game.move(Direction.RIGHT);
-								break;
-							}
-							default:
-							{
-								System.out.println("Unknown direction for move command");
-								error = true;
-							}
-						}
-					}
-					else {
-						System.out.println("Move must be followed by a direction: up, down, left or right");
-						error = true;
-					}
-					
-					break;
-				}
-				case "RESET":
-				{
-					game.reset();
-					break;
-				}
-				case "EXIT":
-				{
-					System.out.println("Game over");
-					finished = true;
-					break;
-				}
-				case "HELP":
-				{
-					printHelp();
-					break;
-				}
-				default:
-				{
-					System.out.println("Unknown command");
-					error = true;
-				}
+			if(command != null) command.execute(game, this);
+			else {
+				printGameState = false;
+				System.err.println("ERROR: Unknown command.");
 			}
 		}
 	}
@@ -124,8 +66,10 @@ public class Controller {
 	 * 
 	 * @return El array de strings previamente mencionado
 	 */
-	private String[] parseIn() {
-		String[] ret = in.nextLine().toUpperCase().split(" ", -1);
+	private Command parseIn() {
+		String[] commandWords = in.nextLine().toUpperCase().split(" ", -1);
+		
+		Command ret = CommandParser.parseCommand(commandWords, this);
 		
 		return ret;
 	}
@@ -141,6 +85,7 @@ public class Controller {
 	
 	public void help() {
 		System.out.println(CommandParser.commandHelp());
+		System.out.println();
 	}
 	
 	public void reset() {
@@ -148,13 +93,7 @@ public class Controller {
 		finished = false;
 	}
 	
-	/**
-	 * Escribe un mensaje de ayuda por pantalla
-	 */
-	private void printHelp() {
-		System.out.println("Move <direction>: execute a move in one of the four directions, up, down, left, right");
-		System.out.println("Reset: start a new game");
-		System.out.println("Help: print this help message");
-		System.out.println("Exit: terminate the program");
+	public void setNoPrintGameState() {
+		this.printGameState = false;
 	}
 }

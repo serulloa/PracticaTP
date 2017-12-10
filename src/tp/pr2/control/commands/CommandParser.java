@@ -38,6 +38,8 @@ public class CommandParser {
 				ret = aux;
 		}
 		
+		if(ret == null) controller.setNoPrintGameState();
+		
 		return ret;
 	}
 	
