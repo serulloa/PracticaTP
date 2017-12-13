@@ -18,7 +18,7 @@ public abstract class NoParamsCommand extends Command {
 	// ================================================================================
 	// Métodos
 	// ================================================================================
-	
+
 	@Override
 	public Command parse(String[] commandWords, Controller controller) {
 		Command ret = null;
@@ -38,6 +38,16 @@ public abstract class NoParamsCommand extends Command {
 				case "RESET":
 				{
 					ret = new ResetCommand();
+					break;
+				}
+				case "UNDO":
+				{
+					ret = new UndoCommand();
+					break;
+				}
+				case "REDO":
+				{
+					ret = new RedoCommand();
 					break;
 				}
 				default:

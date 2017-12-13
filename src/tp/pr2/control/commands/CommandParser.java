@@ -12,7 +12,7 @@ public class CommandParser {
 	// ================================================================================
 	
 	private static Command[] availableCommands = { new HelpCommand(), new ResetCommand(),
-			new ExitCommand(), new MoveCommand() };
+			new ExitCommand(), new MoveCommand(), new UndoCommand(), new RedoCommand() };
 	
 	// ================================================================================
 	// Métodos
@@ -20,9 +20,9 @@ public class CommandParser {
 	
 	
 	/**
-	 *  Este método le pasa,
-	 *	a su vez, el input a un objeto comando de cada una de las clases concretas (que, 
-	 *	son subclases de Command) para averiguar cuál de ellos lo acepta como correcto.
+	 *  Este método le pasa, a su vez, el input a un objeto comando de cada una de las 
+	 *  clases concretas (que, son subclases de Command) para averiguar cuál de ellos lo
+	 *  acepta como correcto.
 	 * 
 	 * @param commandWords Palabras que conforman el comando
 	 * @param controller Controlador desde el que se invoca

@@ -19,10 +19,10 @@ public class Game {
 	private int size; 			// Dimensión del tablero
 	private int initCells; 		// Número de baldosas no nulas iniciales
 	private Random myRandom; 	// Comportamiento aleatorio del juego
-	private int score;
-	private int highest;
-	private boolean losen;
-	private boolean finished;
+	private int score;			// Puntuación del usuario
+	private int highest;		// Máximo token conseguido
+	private boolean losen;		// Partida perdida
+	private boolean finished;	// Partida acabada
 	
 	// ================================================================================
 	// Constructores
@@ -122,11 +122,34 @@ public class Game {
 		return ret;
 	}
 	
+	/**
+	 * Devuelve el atributo booleano losen de la clase Game, que indica
+	 * 
+	 * @return Game.losen
+	 */
 	public boolean isLosen() {
 		return losen;
 	}
 	
+	/**
+	 * Establece el atributo finish a true para indicar la finalización de la
+	 * partida.
+	 */
 	public void finish() {
 		finished = true;
+	}
+	
+	/**
+	 * Deshace el último movimiento que se ha realizado.
+	 */
+	public void undo() {
+		
+	}
+	
+	/**
+	 * Rehace el último movimiento que se ha deshecho.
+	 */
+	public void redo() {
+		
 	}
 }

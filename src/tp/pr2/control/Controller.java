@@ -83,16 +83,27 @@ public class Controller {
 		finished = true;
 	}
 	
+	/**
+	 * Obtiene la ayuda del juego desde las clases Command y luego la imprime en pantalla.
+	 */
 	public void help() {
 		System.out.println(CommandParser.commandHelp());
 		System.out.println();
 	}
 	
+	/**
+	 * Imprime un mensaje que indica el reinicio de la partida y establece el atributo
+	 * finished a false, para indicar que la partida ya no está terminada.
+	 */
 	public void reset() {
 		System.out.println("Game restarted!");
 		finished = false;
 	}
 	
+	/**
+	 * Establece printGameState a false para que no se imprima por pantalla el tablero
+	 * por segunda vez. Suele invocarse al haberse producido un error en el input.
+	 */
 	public void setNoPrintGameState() {
 		this.printGameState = false;
 	}

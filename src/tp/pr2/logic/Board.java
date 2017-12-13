@@ -15,7 +15,7 @@ public class Board {
 
 	private Cell[][] board; // Array bidimensional de celdas
 	private int boardSize; 	// Tamaño del tablero (dimensión)
-	private boolean full;
+	private boolean full;	// Indica si el tablero está lleno
 	
 	// ================================================================================
 	// Constructores
@@ -244,7 +244,43 @@ public class Board {
 		return cont;
 	}
 
+	/**
+	 * Indica si el tablero está lleno.
+	 * 
+	 * @return Devuelve un booleano. Board.full
+	 */
 	public boolean isFull() {
 		return full;
+	}
+	
+	/**
+	 * Hace una copia del tablero que en lugar de estar formada por Cell, está
+	 * formado por int.
+	 * 
+	 * @return Devuelve el estado actual del tablero.
+	 */
+	public int[][] getState() {
+		int boardState[][] = new int[boardSize][boardSize];
+		
+		for(int i = 0; i < boardSize; i++) {
+			for(int j = 0; j < boardSize; j++) {
+				boardState[i][j] = board[i][j].getValue();
+			}
+		}
+		
+		return boardState;
+	}
+	
+	/**
+	 * Pone el tablero en el estado definido por aState.
+	 * 
+	 * @param aState Estado del tablero que se quiere recuperar.
+	 */
+	public void setState(int[][] aState) {
+		for(int i = 0; i < boardSize; i++) {
+			for(int j = 0; j < boardSize; j++) {
+				board[i][j].setValue(aState[i][j]);
+			}
+		}
 	}
 }
