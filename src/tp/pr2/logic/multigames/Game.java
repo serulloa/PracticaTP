@@ -5,6 +5,7 @@ import java.util.Random;
 import tp.pr2.logic.Board;
 import tp.pr2.logic.Direction;
 import tp.pr2.logic.MoveResults;
+import tp.pr2.logic.reundo.GameState;
 
 /**
  * @author Sergio Ulloa
@@ -151,5 +152,25 @@ public class Game {
 	 */
 	public void redo() {
 		
+	}
+	
+	/**
+	 * Obtiene el estado de la partida invocando al método getState de Board.
+	 * 
+	 * @return Devuelve un GameState con el estado actual de la partida.
+	 */
+	public GameState getState() {
+		GameState ret = new GameState(board.getState(), score);
+		return ret;
+	}
+	
+	/**
+	 * Restablece el juego al estado aState e invocando el método setState de Board.
+	 * 
+	 * @param aState Estado al que se quiere restablecer la partida.
+	 */
+	public void setState(GameState aState) {
+		score = aState.getScore();
+		board.setState(aState.getBoardState());
 	}
 }
