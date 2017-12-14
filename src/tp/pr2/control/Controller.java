@@ -53,10 +53,6 @@ public class Controller {
 			
 			command = parseIn();
 			if(command != null) command.execute(game, this);
-			else {
-				printGameState = false;
-				System.err.println("ERROR: Unknown command.");
-			}
 		}
 	}
 	
@@ -106,5 +102,14 @@ public class Controller {
 	 */
 	public void setNoPrintGameState() {
 		this.printGameState = false;
+	}
+	
+	/**
+	 * Método para la impresión de errores por pantalla.
+	 * 
+	 * @param error String con el error a imprimir.
+	 */
+	public void printError(String error) {
+		System.err.println(error);
 	}
 }

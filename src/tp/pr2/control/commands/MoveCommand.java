@@ -38,10 +38,10 @@ public class MoveCommand extends Command {
 	}
 
 	@Override
-	public Command parse(String[] commandWords, Controller controller) {
+	protected Command parse(String[] commandWords, Controller controller) {
 		Command ret = null;
 		
-		if(commandWords[0] == "MOVE" && commandWords.length == 2) {
+		if(commandWords[0].equals("MOVE") && commandWords.length == 2) {
 			switch (commandWords[1]) {
 				case "UP":
 				{

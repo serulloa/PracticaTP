@@ -1,11 +1,11 @@
 package tp.pr2.logic.multigames;
 
 import java.util.Random;
-
 import tp.pr2.logic.Board;
 import tp.pr2.logic.Direction;
 import tp.pr2.logic.MoveResults;
 import tp.pr2.logic.reundo.GameState;
+import tp.pr2.logic.reundo.GameStateStack;
 
 /**
  * @author Sergio Ulloa
@@ -16,14 +16,16 @@ public class Game {
 	// Atributos
 	// ================================================================================
 	
-	private Board board; 		// Tablero
-	private int size; 			// Dimensión del tablero
-	private int initCells; 		// Número de baldosas no nulas iniciales
-	private Random myRandom; 	// Comportamiento aleatorio del juego
-	private int score;			// Puntuación del usuario
-	private int highest;		// Máximo token conseguido
-	private boolean losen;		// Partida perdida
-	private boolean finished;	// Partida acabada
+	private Board board; 				// Tablero
+	private int size; 					// Dimensión del tablero
+	private int initCells; 				// Número de baldosas no nulas iniciales
+	private Random myRandom; 			// Comportamiento aleatorio del juego
+	private int score;					// Puntuación del usuario
+	private int highest;				// Máximo token conseguido
+	private boolean losen;				// Partida perdida
+	private boolean finished;			// Partida acabada
+	private GameStateStack undoStack;	// Movimientos para deshacer
+	private GameStateStack redoStack;	// Movimientos para rehacer
 	
 	// ================================================================================
 	// Constructores
@@ -47,6 +49,10 @@ public class Game {
 			if(aux > highest)
 				highest = aux;
 		}
+		
+		// Inicializamos los GameStateStacks
+		undoStack = new GameStateStack();
+		redoStack = new GameStateStack();
 	}
 	
 	// ================================================================================
@@ -61,6 +67,8 @@ public class Game {
 	 */
 	public void move(Direction dir) {
 		if(!board.isFull() && !losen && !finished) {
+			undoStack.push(getState());
+			
 			MoveResults results = board.executeMove(dir);
 			
 			score += results.getPoints();
@@ -142,16 +150,38 @@ public class Game {
 	
 	/**
 	 * Deshace el último movimiento que se ha realizado.
+	 * 
+	 * @return 	Devuelve true en caso de que se haya podido deshacer el movimiento y false
+	 * 			en caso contrario
 	 */
-	public void undo() {
+	public boolean undo() {
+		boolean ok = false;
 		
+		if(!undoStack.isEmpty()) {
+			redoStack.push(getState());
+			setState(undoStack.pop());
+			ok = true;
+		}
+		
+		return ok;
 	}
 	
 	/**
 	 * Rehace el último movimiento que se ha deshecho.
+	 * 
+	 * @return 	Devuelve true en caso de que se haya podido rehacer el movimiento y false
+	 * 			en caso contrario
 	 */
-	public void redo() {
+	public boolean redo() {
+		boolean ok = false;
 		
+		if(!redoStack.isEmpty()) {
+			undoStack.push(getState());
+			setState(redoStack.pop());
+			ok = true;
+		}
+		
+		return ok;
 	}
 	
 	/**
@@ -159,7 +189,7 @@ public class Game {
 	 * 
 	 * @return Devuelve un GameState con el estado actual de la partida.
 	 */
-	public GameState getState() {
+	private GameState getState() {
 		GameState ret = new GameState(board.getState(), score);
 		return ret;
 	}
@@ -169,7 +199,7 @@ public class Game {
 	 * 
 	 * @param aState Estado al que se quiere restablecer la partida.
 	 */
-	public void setState(GameState aState) {
+	private void setState(GameState aState) {
 		score = aState.getScore();
 		board.setState(aState.getBoardState());
 	}

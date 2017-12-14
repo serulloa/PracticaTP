@@ -34,9 +34,9 @@ public abstract class Command {
 	
 	public abstract void execute(Game game, Controller controller);
 	
-	public abstract Command parse(String[] commandWords, Controller controller);
+	protected abstract Command parse(String[] commandWords, Controller controller);
 	
-	public String helpText() {
+	protected String helpText() {
 		return " " + commandText + ": " + helpText;
 	}
 }

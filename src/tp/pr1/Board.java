@@ -176,7 +176,6 @@ public class Board {
 	public String toString() {
 		String ret = "";
 		int cellSize = 7;
-		String space = " ";
 		String vDelimiter = "|";
 		String hDelimiter = "-";
 		

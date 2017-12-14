@@ -20,7 +20,7 @@ public abstract class NoParamsCommand extends Command {
 	// ================================================================================
 
 	@Override
-	public Command parse(String[] commandWords, Controller controller) {
+	protected Command parse(String[] commandWords, Controller controller) {
 		Command ret = null;
 		
 		if(commandWords.length == 1) {

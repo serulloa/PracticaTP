@@ -19,7 +19,11 @@ public class RedoCommand extends NoParamsCommand {
 
 	@Override
 	public void execute(Game game, Controller controller) {
-		game.redo();
+		boolean ok = game.redo();
+		if(!ok) {
+			controller.setNoPrintGameState();
+			controller.printError("Nothing to redo");
+		}
 	}
 
 }

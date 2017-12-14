@@ -32,23 +32,11 @@ public class MoveResults {
 		return moved;
 	}
 	
-	public void setMoved(boolean moved) {
-		this.moved = moved;
-	}
-	
 	public int getPoints() {
 		return points;
 	}
 	
-	public void setPoints(int points) {
-		this.points = points;
-	}
-	
 	public int getMaxToken() {
 		return maxToken;
-	}
-	
-	public void setMaxToken(int maxToken) {
-		this.maxToken = maxToken;
 	}
 }

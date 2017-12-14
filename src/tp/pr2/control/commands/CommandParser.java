@@ -34,11 +34,16 @@ public class CommandParser {
 		
 		for(Command com: availableCommands) {
 			Command aux = com.parse(commandWords, controller);
-			if(aux != null)
+			if(aux != null) {
 				ret = aux;
+				break;
+			}
 		}
 		
-		if(ret == null) controller.setNoPrintGameState();
+		if(ret == null) {
+			controller.setNoPrintGameState();
+			controller.printError("Unknown command");
+		}
 		
 		return ret;
 	}
