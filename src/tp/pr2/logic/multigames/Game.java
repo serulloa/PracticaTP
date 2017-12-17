@@ -26,33 +26,29 @@ public class Game {
 	private boolean finished;			// Partida acabada
 	private GameStateStack undoStack;	// Movimientos para deshacer
 	private GameStateStack redoStack;	// Movimientos para rehacer
+	private GameRules currentRules;		// Guarda las reglas del juego actual
 	
 	// ================================================================================
 	// Constructores
 	// ================================================================================
 	
-	public Game(int size, int initCells, Random myRandom) {
+	public Game(GameRules rules, int size, int initCells, long seed) {
 		this.size = size;
 		this.initCells = initCells;
-		this.myRandom = myRandom;
+		this.myRandom = new Random(seed);
 		this.score = 0;
-		this.highest = 0;
 		this.losen = false;
 		this.finished = false;
 		
 		this.board = new Board(size);
 		
-		for(int i = 0; i < initCells; i++) {
-			int aux = nextValue();
-			board.newCell(aux, myRandom);
-			
-			if(aux > highest)
-				highest = aux;
-		}
-		
 		// Inicializamos los GameStateStacks
 		undoStack = new GameStateStack();
 		redoStack = new GameStateStack();
+		
+		this.currentRules = rules;
+		this.currentRules.initBoard(this.board, initCells, this.myRandom);
+		this.highest = currentRules.getWinValue(this.board);
 	}
 	
 	// ================================================================================
@@ -70,39 +66,19 @@ public class Game {
 			redoStack = new GameStateStack();
 			undoStack.push(getState());
 			
-			MoveResults results = board.executeMove(dir);
+			MoveResults results = board.executeMove(dir, currentRules);
 			
 			score += results.getPoints();
-			highest = results.getMaxToken();
-			if(highest >= 2048) finished = true;
+			highest = currentRules.getWinValue(board);
+			if(currentRules.win(board)) finished = true;
 			
-			if(results.isMoved()) board.newCell(nextValue(), myRandom);
+			if(results.isMoved()) currentRules.addNewCell(board, myRandom);
 			else undoStack.pop();
 			
-			if(!board.canMove()) losen = true;
+			if(currentRules.lose(board)) losen = true;
 		}
 		else
 			losen = true;
-	}
-	
-	/**
-	 * Calcula el nuevo valor a introducir en el tablero
-	 * [2 -> 90% |
-	 *  4 -> 10%]
-	 * 
-	 * @return Devuelve el nuevo valor
-	 */
-	private int nextValue() {
-		int bound = 9;
-		
-		int ret = myRandom.nextInt(bound) + 1;
-		
-		if(ret > 1)
-			ret = 2;
-		else
-			ret = 4;
-		
-		return ret;
 	}
 	
 	/**
@@ -110,24 +86,19 @@ public class Game {
 	 */
 	public void reset() {
 		score = 0;
-		highest = 0;
 		board = new Board(size);
 		losen = false;
+		finished = false;
 		
-		for(int i = 0; i < initCells; i++) {
-			int aux = nextValue();
-			board.newCell(aux, myRandom);
-			
-			if(aux > highest)
-				highest = aux;
-		}
+		currentRules.initBoard(board, initCells, myRandom);
+		highest = currentRules.getWinValue(board);
 	}
 	
 	public String toString() {
 		String ret = "";
 		
 		ret += board.toString();
-		ret += "highest: " + String.valueOf(highest);
+		ret += "best value: " + String.valueOf(highest);
 		ret += "		score: " + String.valueOf(score) + "\n";
 		if(losen) ret += "Game over\n";
 		if(finished) ret += "Well done!\n";
@@ -206,5 +177,32 @@ public class Game {
 	private void setState(GameState aState) {
 		score = aState.getScore();
 		board.setState(aState.getBoardState());
+	}
+
+	/**
+	 * Se utiliza para resetear la partida cuando hay un cambio de tipo de juego.
+	 * 
+	 * @param rules Nuevas reglas a utilizar, correspondientes al nuevo tipo de juego.
+	 * @param boardSize Tamaño del nuevo tablero.
+	 * @param initialCells Número de celdas iniciales.
+	 * @param randomSeed Semilla de aleatoriedad.
+	 */
+	public void changeGame(GameRules rules, int boardSize, int initialCells, int randomSeed) {
+		this.currentRules = rules;
+		this.size = boardSize;
+		this.initCells = initialCells;
+		this.myRandom = new Random(randomSeed);
+		
+		score = 0;
+		board = new Board(size);
+		losen = false;
+		finished = false;
+		
+		currentRules.initBoard(board, initCells, myRandom);
+		highest = currentRules.getWinValue(board);
+		
+		// Inicializamos los GameStateStacks
+		undoStack = new GameStateStack();
+		redoStack = new GameStateStack();
 	}
 }

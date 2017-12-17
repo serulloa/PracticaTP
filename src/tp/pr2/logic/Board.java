@@ -1,7 +1,6 @@
 package tp.pr2.logic;
 
-import java.util.Random;
-
+import tp.pr2.logic.multigames.GameRules;
 import tp.util.MyStringUtils;
 
 /**
@@ -16,6 +15,8 @@ public class Board {
 	private Cell[][] board; // Array bidimensional de celdas
 	private int boardSize; 	// Tamaño del tablero (dimensión)
 	private boolean full;	// Indica si el tablero está lleno
+	private int maxValue;	// Máximo valor del tablero
+	private int minValue;	// Mínimo valor del tablero
 	
 	// ================================================================================
 	// Constructores
@@ -27,16 +28,28 @@ public class Board {
 		this.full = false;
 		
 		for(int i = 0; i < boardSize; i++) {
-			for(int j = 0; j < boardSize; j++) 
+			for(int j = 0; j < boardSize; j++) {
 				this.board[i][j] = new Cell(0);
+//				if((i+j)%2 == 0) this.board[i][j] = new Cell(2);
+//				else this.board[i][j] = new Cell(4);
+			}
 		}
+		
+//		board[2][1].setValue(16);
+//		board[2][2].setValue(16);
+//		board[2][0].setValue(64);
+		
+//		board[0][1].setValue(1024);
+//		board[1][0].setValue(512);
+//		board[1][1].setValue(512);
 	}
 	
 	// ================================================================================
 	// Métodos
 	// ================================================================================
 	
-	/** Modifica el valor de una celda en la posición pos con el valor value
+	/**
+	 * Modifica el valor de una celda en la posición pos con el valor value
 	 * 
 	 * @param pos Posición de la celda
 	 * @param value Nuevo valor para la celda
@@ -46,18 +59,22 @@ public class Board {
 		int column = pos.getColumn();
 		
 		board[row][column].setValue(value);
+		
+		if(value > maxValue) maxValue = value;
+		if((value < minValue && value != 0) || minValue == 0) minValue = value;
 	}
 	
-	/**Dependiendo del movimiento realiza transposiciones o reflejos del tablero en
+	/**
+	 * Dependiendo del movimiento realiza transposiciones o reflejos del tablero en
 	 * auxBoard, para así reducir el código repetido. Luego llama al método move para
 	 * después rellenar el objeto MoveResults con la información del movimiento
 	 * 
 	 * @param dir Dirección del movimiento
 	 * @return Un objeto MoveResults que contiene el resultado del movimiento
 	 */
-	public MoveResults executeMove(Direction dir) {
+	public MoveResults executeMove(Direction dir, GameRules rules) {
 		Board auxBoard = new Board(boardSize);
-		MoveResults ret = new MoveResults(false, 0, 0);
+		MoveResults ret = new MoveResults(false, 0);
 		
 		switch (dir) {
 			case UP:
@@ -67,7 +84,7 @@ public class Board {
 						auxBoard.board[j][(boardSize-1)-i] = new Cell(board[i][j].getValue());
 					}
 				}
-				ret = move(auxBoard);
+				ret = move(auxBoard, rules);
 				for(int i = 0; i < boardSize; i++) {
 					for(int j = 0; j < boardSize; j++) {
 						board[(boardSize-1)-j][i] = auxBoard.board[i][j];
@@ -82,7 +99,7 @@ public class Board {
 						auxBoard.board[(boardSize-1)-j][i] = new Cell(board[i][j].getValue());
 					}
 				}
-				ret = move(auxBoard);
+				ret = move(auxBoard, rules);
 				for(int i = 0; i < boardSize; i++) {
 					for(int j = 0; j < boardSize; j++) {
 						board[j][(boardSize-1)-i] = auxBoard.board[i][j];
@@ -97,7 +114,7 @@ public class Board {
 						auxBoard.board[i][(boardSize-1)-j] = new Cell(board[i][j].getValue());
 					}
 				}
-				ret = move(auxBoard);
+				ret = move(auxBoard, rules);
 				for(int i = 0; i < boardSize; i++) {
 					for(int j = 0; j < boardSize; j++) {
 						board[i][(boardSize-1)-j] = auxBoard.board[i][j];
@@ -107,7 +124,7 @@ public class Board {
 				break;
 			case RIGHT:
 			{
-				ret = move(this);
+				ret = move(this, rules);
 			}
 				break;	
 		}
@@ -121,10 +138,10 @@ public class Board {
 	 * @param auxBoard Es el tablero sobre el que se aplica el movimiento
 	 * @return un objeto MoveResults con los resultados de aplicar el movimiento
 	 */
-	private MoveResults move(Board auxBoard) {
+	private MoveResults move(Board auxBoard, GameRules rules) {
 		boolean moved = false;
 		int points = 0;
-		int max = 0;
+		int movPoints = 0;
 		
 		for(int i = 0; i < auxBoard.boardSize; i++) {
 			Position right = new Position(i, auxBoard.boardSize-1);
@@ -134,11 +151,6 @@ public class Board {
 				Position pos = new Position(i, j);
 				Cell posCell = auxBoard.board[pos.getRow()][pos.getColumn()];
 				
-				if(max < rightCell.getValue())
-					max = rightCell.getValue();
-				else if(max < posCell.getValue())
-					max = posCell.getValue();
-				
 				if(rightCell.isEmpty() && posCell.getValue() != 0) {
 					auxBoard.setCell(right, posCell.getValue());
 					auxBoard.setCell(pos, 0);
@@ -147,11 +159,12 @@ public class Board {
 				
 				else {
 					if(!posCell.isEmpty()) {
-						if(rightCell.doMerge(posCell)) {
+						movPoints = rightCell.doMerge(posCell, rules);
+						if(movPoints != 0) {
 							moved = true;
-							points += rightCell.getValue();
-							if(max < rightCell.getValue())
-								max = rightCell.getValue();
+							points += movPoints;
+							if(rightCell.getValue() > maxValue) maxValue = rightCell.getValue();
+							if(rightCell.getValue() < minValue) minValue = rightCell.getValue();
 						}
 						
 						else {
@@ -170,7 +183,7 @@ public class Board {
 			}
 		}
 		
-		return new MoveResults(moved, points, max);
+		return new MoveResults(moved, points);
 	}
 	
 	public String toString() {
@@ -202,27 +215,6 @@ public class Board {
 	}
 	
 	/**
-	 * Busca aleatoriamente y establece una nueva celda con el valor dado.
-	 * Sirve para crear la nueva ficha al final de un movimiento
-	 * 
-	 * @param value Valor de la nueva celda
-	 * @param random Aleatoriedad
-	 */
-	public void newCell(int value, Random random) {
-		Position[] positions = new Position[boardSize*boardSize]; 
-		int cont = emptyCells(positions);
-		int index = 0;
-		Position pos;
-		
-		if(cont <= 0) full = true;
-		else {
-			index = random.nextInt(cont);
-			pos = positions[index];
-			setCell(pos, value);
-		}
-	}
-	
-	/**
 	 * Recorre el tablero buscando las posiciones vacías y almacenadolas en un array
 	 * de Positions
 	 * 
@@ -242,6 +234,7 @@ public class Board {
 		}
 		
 		if(cont > 1) full = false;
+		else full = true;
 		
 		return cont;
 	}
@@ -251,7 +244,7 @@ public class Board {
 	 * 
 	 * @return Devuelve un booleano. Board.full
 	 */
-	public boolean isFull() {
+	private boolean isFull() {
 		return full;
 	}
 	
@@ -292,7 +285,7 @@ public class Board {
 	 * @return 	En caso de que se pueda realizar movimiento devuelve true. Devuelve 
 	 * 			false en caso contrario.
 	 */
-	public boolean canMove() {
+	public boolean canMove(GameRules rules) {
 		boolean ret = false;
 		
 		if(!isFull()) ret = true;
@@ -300,12 +293,16 @@ public class Board {
 			for(int i = 0; i < boardSize && ret == false; i++) {
 				for(int j = 0; j < boardSize && ret == false; j++) {
 					if(j < boardSize-1) {
-						if(board[i][j].getValue() == board[i][j+1].getValue())
+						Cell self = new Cell(board[i][j].getValue());
+						Cell other = new Cell(board[i][j+1].getValue());
+						if(self.doMerge(other, rules) != 0)
 							ret = true;
 					}
 					
 					if(i < boardSize-1) {
-						if(board[i][j].getValue() == board[i+1][j].getValue())
+						Cell self = new Cell(board[i][j].getValue());
+						Cell other = new Cell(board[i+1][j].getValue());
+						if(self.doMerge(other, rules) != 0)
 							ret = true;
 					}
 				}
@@ -319,6 +316,29 @@ public class Board {
 	// Getters y Setters
 	// ================================================================================
 	
+	/**
+	 * Busca el máximo valor existente en el tablero.
+	 * 
+	 * @return Devuelve un int con el máximo valor.
+	 */
+	public int getMaxValue() {		
+		return maxValue;
+	}
+	
+	/**
+	 * Busca el mínimo valor existente en el tablero.
+	 * 
+	 * @return Devuelve un int con el mínimo valor.
+	 */
+	public int getMinValue() {		
+		return minValue;
+	}
+	
+	/**
+	 * Devuelve el tamaño actual del tablero
+	 * 
+	 * @return Devuelve Board.boardSize.
+	 */
 	public int getBoardSize() {
 		return this.boardSize;
 	}

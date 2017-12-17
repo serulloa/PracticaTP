@@ -1,5 +1,7 @@
 package tp.pr2.logic;
 
+import tp.pr2.logic.multigames.GameRules;
+
 /**
  * @author Sergio Ulloa
  */
@@ -43,16 +45,8 @@ public class Cell {
 	 * @param neighbour Es la celda vecina
 	 * @return True si las dos celdas pueden fusionarse, false en caso contrario
 	 */
-	public boolean doMerge(Cell neighbour) {
-		boolean ret = false;
-		
-		if(neighbour.value == value) {
-			ret = true;
-			value += neighbour.value;
-			neighbour.value = 0;
-		}
-		
-		return ret;
+	public int doMerge(Cell neighbour, GameRules rules) {		
+		return rules.merge(this, neighbour);
 	}
 
 	// ================================================================================

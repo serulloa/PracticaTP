@@ -58,7 +58,7 @@ public interface GameRules {
 	default boolean lose(Board board) {
 		boolean losen = false;
 		
-		if(!board.canMove())
+		if(!board.canMove(this))
 			losen = true;
 		
 		return losen;
