@@ -1,7 +1,6 @@
 package tp.pr2.logic.multigames;
 
 import java.util.Random;
-
 import tp.pr2.logic.Board;
 import tp.pr2.logic.Cell;
 import tp.pr2.logic.Position;
@@ -56,5 +55,69 @@ public interface GameRules {
 	 * @param board Tablero que se quiere comprobar.
 	 * @return True si se ha perdido, false en caso contrario.
 	 */
-	boolean lose(Board board);
+	default boolean lose(Board board) {
+		boolean losen = false;
+		
+		if(!board.canMove())
+			losen = true;
+		
+		return losen;
+	}
+	
+	/**
+	 * Crea un tablero llamando al constructor de Board.
+	 * 
+	 * @param size Tamaño del tablero.
+	 * @return Devuelve el tablero creado.
+	 */
+	default Board createBoard(int size) {
+		return new Board(size);
+	}
+	
+	/**
+	 * Elige una posición libre de board e invoca el método addNewCellAt() para añadir una 
+	 * celda en esa posición.
+	 * 
+	 * @param board Tablero donde se quiere colocar la nueva celda.
+	 * @param rand Semilla de aleatoriedad.
+	 */
+	default void addNewCell(Board board, Random rand) {
+		Position[] positions = new Position[board.getBoardSize()*board.getBoardSize()];
+		int cont = board.emptyCells(positions);
+		int index = rand.nextInt(cont);
+		Position pos = positions[index];
+		
+		addNewCellAt(board, pos, rand);
+	}
+	
+	/**
+	 * Inicializa board eligiendo numCells posiciones libres, e invoca el método 
+	 * addNewCellAt() para añadir nuevas celdas en esas posiciones.
+	 * 
+	 * @param board Tablero a inicializar.
+	 * @param numCells Número de celdas que tendrán un valor inicial.
+	 * @param rand Semilla de aleatoriedad.
+	 */
+	default void initBoard(Board board, int numCells, Random rand) {		
+		int cont = 0;
+		Position[] positions = new Position[numCells];
+		
+		while(cont < numCells) {
+			int row = rand.nextInt(board.getBoardSize());
+			int col = rand.nextInt(board.getBoardSize());
+			boolean ok = true;
+			Position pos = new Position(row, col);
+			
+			for(int i = 0; i < cont; i++)
+				if(pos.equals(positions[i])) ok = false;
+			
+			if(ok) {
+				positions[cont] = pos;
+				cont++;
+			}
+		}
+		
+		for(Position pos : positions)
+			addNewCellAt(board, pos, rand);
+	}
 }

@@ -139,7 +139,7 @@ public class Board {
 				else if(max < posCell.getValue())
 					max = posCell.getValue();
 				
-				if(rightCell.isEmpty()) {
+				if(rightCell.isEmpty() && posCell.getValue() != 0) {
 					auxBoard.setCell(right, posCell.getValue());
 					auxBoard.setCell(pos, 0);
 					moved = true;
@@ -226,9 +226,10 @@ public class Board {
 	 * Recorre el tablero buscando las posiciones vacías y almacenadolas en un array
 	 * de Positions
 	 * 
-	 * @return Un array de Positions dónde las celdas están vacías
+	 * @param positions Array donde se almacenarán las posiciones libres.
+	 * @return Devuelve un int con el número de posiciones libres.
 	 */
-	private int emptyCells(Position[] positions){
+	public int emptyCells(Position[] positions){
 		int cont = 0;
 		
 		for(int i = 0; i < boardSize; i++) {
@@ -239,6 +240,8 @@ public class Board {
 				}
 			}
 		}
+		
+		if(cont > 1) full = false;
 		
 		return cont;
 	}
@@ -282,4 +285,42 @@ public class Board {
 			}
 		}
 	}
+	
+	/**
+	 * Comprueba si se puede realizar algún movimiento en el tablero.
+	 * 
+	 * @return 	En caso de que se pueda realizar movimiento devuelve true. Devuelve 
+	 * 			false en caso contrario.
+	 */
+	public boolean canMove() {
+		boolean ret = false;
+		
+		if(!isFull()) ret = true;
+		else {
+			for(int i = 0; i < boardSize && ret == false; i++) {
+				for(int j = 0; j < boardSize && ret == false; j++) {
+					if(j < boardSize-1) {
+						if(board[i][j].getValue() == board[i][j+1].getValue())
+							ret = true;
+					}
+					
+					if(i < boardSize-1) {
+						if(board[i][j].getValue() == board[i+1][j].getValue())
+							ret = true;
+					}
+				}
+			}
+		}
+		
+		return ret;
+	}
+	
+	// ================================================================================
+	// Getters y Setters
+	// ================================================================================
+	
+	public int getBoardSize() {
+		return this.boardSize;
+	}
+	
 }

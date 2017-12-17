@@ -94,12 +94,4 @@ public class Position {
 	public int getColumn() {
 		return column;
 	}
-
-	public void setRow(int row) {
-		this.row = row;
-	}
-
-	public void setColumn(int column) {
-		this.column = column;
-	}
 }

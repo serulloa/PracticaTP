@@ -66,16 +66,20 @@ public class Game {
 	 * @param dir Es la dirección del movimiento
 	 */
 	public void move(Direction dir) {
-		if(!board.isFull() && !losen && !finished) {
+		if(!losen && !finished) {
+			redoStack = new GameStateStack();
 			undoStack.push(getState());
 			
 			MoveResults results = board.executeMove(dir);
 			
 			score += results.getPoints();
 			highest = results.getMaxToken();
-			if(highest >= 2048) losen = true;
+			if(highest >= 2048) finished = true;
 			
-			board.newCell(nextValue(), myRandom);
+			if(results.isMoved()) board.newCell(nextValue(), myRandom);
+			else undoStack.pop();
+			
+			if(!board.canMove()) losen = true;
 		}
 		else
 			losen = true;
@@ -125,8 +129,8 @@ public class Game {
 		ret += board.toString();
 		ret += "highest: " + String.valueOf(highest);
 		ret += "		score: " + String.valueOf(score) + "\n";
-		if(board.isFull()) ret += "Game over\n";
-		if(highest >= 2048) ret += "Well done!\n";
+		if(losen) ret += "Game over\n";
+		if(finished) ret += "Well done!\n";
 		
 		return ret;
 	}

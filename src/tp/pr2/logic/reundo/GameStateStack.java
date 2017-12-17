@@ -48,7 +48,8 @@ public class GameStateStack {
 		index++;
 		buffer[index] = state;
 		
-		if(index >= CAPACITY) deleteFirst();
+		if(index >= CAPACITY) 
+			deleteFirst();
 	}
 	
 	/**
@@ -70,5 +71,6 @@ public class GameStateStack {
 		for(int i = 0; i < CAPACITY; i++) {
 			buffer[i] = buffer[i+1];
 		}
+		index--;
 	}
 }
