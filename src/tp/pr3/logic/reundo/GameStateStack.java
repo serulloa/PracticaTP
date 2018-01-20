@@ -1,5 +1,7 @@
 package tp.pr3.logic.reundo;
 
+import tp.pr3.exceptions.EmptyStackException;
+
 /**
  * @author Sergio Ulloa López
  */
@@ -19,7 +21,7 @@ public class GameStateStack {
 	
 	public GameStateStack() {
 		this.buffer = new GameState[CAPACITY+1];
-		this.index = 0;
+		this.index = -1;
 	}
 	
 	// ================================================================================
@@ -31,10 +33,19 @@ public class GameStateStack {
 	 * que se mantenga actualizado.
 	 * 
 	 * @return Devuelve el último elemento del array.
+	 * @throws EmptyStackException En caso de que no haya elementos en la pila, lanza una
+	 * 			excepción.
 	 */
-	public GameState pop() {
-		GameState ret = buffer[index];
-		index--;
+	public GameState pop() throws EmptyStackException {
+		GameState ret = null;
+		
+		if(!this.isEmpty()) {
+			ret = buffer[index];
+			index--;
+		}
+		else
+			throw new EmptyStackException("Nothing to redo");
+		
 		return ret;
 	}
 	
@@ -60,7 +71,7 @@ public class GameStateStack {
 	 */
 	public boolean isEmpty() {
 		boolean ret = false;
-		if(index == 0) ret = true;
+		if(index < 0) ret = true;
 		return ret;
 	}
 	

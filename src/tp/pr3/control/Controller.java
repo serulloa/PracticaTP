@@ -1,9 +1,12 @@
 package tp.pr3.control;
 
+import java.util.EmptyStackException;
 import java.util.Scanner;
 
 import tp.pr3.control.commands.Command;
 import tp.pr3.control.commands.CommandParser;
+import tp.pr3.exceptions.UnknownCommandException;
+import tp.pr3.exceptions.UnknownDirectionException;
 import tp.pr3.logic.multigames.Game;
 
 /**
@@ -52,7 +55,13 @@ public class Controller {
 			System.out.print("Command > ");
 			
 			command = parseIn();
-			if(command != null) command.execute(game, this);
+			try {
+				if(command != null) command.execute(game, this);
+			} catch (EmptyStackException e) {
+				printGameState = false;
+				System.err.println("Nothing to undo");
+			}
+			
 		}
 	}
 	
@@ -64,8 +73,14 @@ public class Controller {
 	 */
 	private Command parseIn() {
 		String[] commandWords = in.nextLine().toUpperCase().split(" ", -1);
+		Command ret = null;
 		
-		Command ret = CommandParser.parseCommand(commandWords, this);
+		try {
+			ret = CommandParser.parseCommand(commandWords, this);
+		} catch (UnknownCommandException | UnknownDirectionException e) {
+			System.err.println(e.getMessage());
+			this.printGameState = false;
+		}
 		
 		return ret;
 	}
@@ -123,20 +138,24 @@ public class Controller {
 		String cadena = null;
 		int size = 4;
 		
-		while(!ok) {
-			System.out.print("Please enter the size of the board: ");
-			cadena = in.nextLine();
-			String words[] = cadena.split(" ");
-			
-			if(cadena.isEmpty()) System.out.println("Using the default size of the board: 4");
-			else size = Integer.valueOf(words[0]);
-			
-			if(words.length > 1)
-				System.err.println("Please provide a single positive integer or press return.");
-			else if(size <= 0)
-				System.err.println("The size of the board must be positive.");
-			else
-				ok = true;
+		while(!ok) {			
+			try {
+				System.out.print("Please enter the size of the board: ");
+				cadena = in.nextLine();
+				String words[] = cadena.split(" ");
+				
+				if(cadena.isEmpty()) System.out.println("Using the default size of the board: 4");
+				else size = Integer.valueOf(words[0]);
+				
+				if(words.length > 1)
+					System.err.println("Please provide a single positive integer or press return.");
+				else if(size <= 0)
+					System.err.println("The size of the board must be positive.");
+				else
+					ok = true;
+			} catch (NumberFormatException e) {
+				System.err.println("Please provide a single positive or press return.");
+			}
 		}
 		
 		return size;
@@ -153,21 +172,25 @@ public class Controller {
 		int cells = 2;
 		
 		while(!ok) {
-			System.out.print("Please enter the number of initial cells: ");
-			line = in.nextLine();
-			String words[] = line.split(" ");
-			
-			if(line.isEmpty()) System.out.println("Using the default number of initial cells: 2");
-			else cells = Integer.valueOf(words[0]);
-			
-			if(words.length > 1)
-				System.err.println("Please provide a single positive integer or press return.");
-			else if(cells <= 0)
-				System.err.println("The number of initial dells must be positive.");
-			else if(cells > size*size)
-				System.err.println("The number of initial cells must be less than the number of cells on the board");
-			else
-				ok = true;
+			try {
+				System.out.print("Please enter the number of initial cells: ");
+				line = in.nextLine();
+				String words[] = line.split(" ");
+				
+				if(line.isEmpty()) System.out.println("Using the default number of initial cells: 2");
+				else cells = Integer.valueOf(words[0]);
+				
+				if(words.length > 1)
+					System.err.println("Please provide a single positive integer or press return.");
+				else if(cells <= 0)
+					System.err.println("The number of initial dells must be positive.");
+				else if(cells > size*size)
+					System.err.println("The number of initial cells must be less than the number of cells on the board");
+				else
+					ok = true;
+			} catch (NumberFormatException e) {
+				System.err.println("Please provide a single positive or press return.");
+			}
 		}
 		
 		return cells;
@@ -184,19 +207,23 @@ public class Controller {
 		int seed = 1000;
 		
 		while(!ok) {
-			System.out.print("Please enter the seed for the pseudo-random number generator: ");
-			line = in.nextLine();
-			String words[] = line.split(" ");
-			
-			if(line.isEmpty()) System.out.println("Using the default seed for the pseudo-random number generator: 1000");
-			else seed = Integer.valueOf(words[0]);
-			
-			if(words.length > 1)
-				System.err.println("Please provide a single positive integer or press return.");
-			else if(seed <= 0)
-				System.err.println("The size of the board must be positive.");
-			else
-				ok = true;
+			try {
+				System.out.print("Please enter the seed for the pseudo-random number generator: ");
+				line = in.nextLine();
+				String words[] = line.split(" ");
+				
+				if(line.isEmpty()) System.out.println("Using the default seed for the pseudo-random number generator: 1000");
+				else seed = Integer.valueOf(words[0]);
+				
+				if(words.length > 1)
+					System.err.println("Please provide a single positive integer or press return.");
+				else if(seed <= 0)
+					System.err.println("The size of the board must be positive.");
+				else
+					ok = true;
+			} catch (NumberFormatException e) {
+				System.err.println("Please provide a single positive or press return.");
+			}
 		}
 		
 		return seed;

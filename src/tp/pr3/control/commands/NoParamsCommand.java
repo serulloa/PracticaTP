@@ -50,8 +50,6 @@ public abstract class NoParamsCommand extends Command {
 					ret = new RedoCommand();
 					break;
 				}
-				default:
-					controller.setNoPrintGameState();
 			}
 		}
 		

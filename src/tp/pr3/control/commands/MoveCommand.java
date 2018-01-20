@@ -1,6 +1,7 @@
 package tp.pr3.control.commands;
 
 import tp.pr3.control.Controller;
+import tp.pr3.exceptions.UnknownDirectionException;
 import tp.pr3.logic.Direction;
 import tp.pr3.logic.multigames.Game;
 
@@ -38,7 +39,7 @@ public class MoveCommand extends Command {
 	}
 
 	@Override
-	protected Command parse(String[] commandWords, Controller controller) {
+	protected Command parse(String[] commandWords, Controller controller) throws UnknownDirectionException {
 		Command ret = null;
 		
 		if(commandWords[0].equals("MOVE") && commandWords.length == 2) {
@@ -64,7 +65,7 @@ public class MoveCommand extends Command {
 					break;
 				}
 				default:
-					controller.setNoPrintGameState();
+					throw new UnknownDirectionException("Unknown direction");
 			}
 		}
 		

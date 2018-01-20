@@ -1,6 +1,8 @@
 package tp.pr3.logic.multigames;
 
 import java.util.Random;
+
+import tp.pr3.exceptions.EmptyStackException;
 import tp.pr3.logic.Board;
 import tp.pr3.logic.Direction;
 import tp.pr3.logic.MoveResults;
@@ -73,7 +75,13 @@ public class Game {
 			if(currentRules.win(board)) finished = true;
 			
 			if(results.isMoved()) currentRules.addNewCell(board, myRandom);
-			else undoStack.pop();
+			else {
+				try {
+					undoStack.pop();
+				} catch (EmptyStackException e) {
+					
+				}
+			}
 			
 			if(currentRules.lose(board)) losen = true;
 		}
@@ -128,17 +136,16 @@ public class Game {
 	 * 
 	 * @return 	Devuelve true en caso de que se haya podido deshacer el movimiento y false
 	 * 			en caso contrario
+	 * @throws EmptyStackException Si la pila está vacía.
 	 */
-	public boolean undo() {
-		boolean ok = false;
-		
-		if(!undoStack.isEmpty()) {
-			redoStack.push(getState());
+	public void undo() throws EmptyStackException {
+		try {
+			GameState temp = getState();
 			setState(undoStack.pop());
-			ok = true;
+			redoStack.push(temp);
+		} catch (EmptyStackException e) {
+			throw e;
 		}
-		
-		return ok;
 	}
 	
 	/**
@@ -146,17 +153,16 @@ public class Game {
 	 * 
 	 * @return 	Devuelve true en caso de que se haya podido rehacer el movimiento y false
 	 * 			en caso contrario
+	 * @throws EmptyStackException 
 	 */
-	public boolean redo() {
-		boolean ok = false;
-		
-		if(!redoStack.isEmpty()) {
-			undoStack.push(getState());
+	public void redo() throws EmptyStackException {
+		try {
+			GameState temp = getState();
 			setState(redoStack.pop());
-			ok = true;
+			undoStack.push(temp);
+		} catch (EmptyStackException e) {
+			throw e;
 		}
-		
-		return ok;
 	}
 	
 	/**

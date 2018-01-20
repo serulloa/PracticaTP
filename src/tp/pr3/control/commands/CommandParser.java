@@ -1,6 +1,8 @@
 package tp.pr3.control.commands;
 
 import tp.pr3.control.Controller;
+import tp.pr3.exceptions.UnknownCommandException;
+import tp.pr3.exceptions.UnknownDirectionException;
 
 /**
  * @author Sergio Ulloa
@@ -29,21 +31,29 @@ public class CommandParser {
 	 * @param controller Controlador desde el que se invoca
 	 * @return En caso de éxitoevuelve un objeto de la clase comando a la que corresponde la entrada
 	 * 			y, en caso de fallo, devuelve null.
+	 * @throws UnknownCommandException En el caso de que no se pueda parsear como ningún parámentro
+	 * 			existente.
+	 * @throws UnknownDirectionException en el caso de que, habiendose parseado como un comando MOVE,
+	 * 			no se haya encontrado una dirección que coincida.
 	 */
-	public static Command parseCommand(String[] commandWords, Controller controller) {
+	public static Command parseCommand(String[] commandWords, Controller controller) 
+			throws UnknownCommandException, UnknownDirectionException {
 		Command ret = null;
 		
-		for(Command com: availableCommands) {
-			Command aux = com.parse(commandWords, controller);
-			if(aux != null) {
-				ret = aux;
-				break;
+		try {
+			for(Command com: availableCommands) {
+				Command aux = com.parse(commandWords, controller);
+				if(aux != null) {
+					ret = aux;
+					break;
+				}
 			}
-		}
-		
-		if(ret == null) {
-			controller.setNoPrintGameState();
-			controller.printError("Unknown command");
+			
+			if(ret == null) {
+				throw new UnknownCommandException("Unknown command");
+			}
+		} catch (UnknownDirectionException e) {
+			throw e;
 		}
 		
 		return ret;
