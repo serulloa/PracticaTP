@@ -101,15 +101,12 @@ public class PlayCommand extends Command {
 				}
 			}
 			
-			if(gameType != null) {
-				if(commandWords.length == 5) {
-					ret = new PlayCommand(gameType, Integer.parseInt(commandWords[2]), Integer.parseInt(commandWords[3]), 
-							Integer.parseInt(commandWords[4]));
-				}
-				else if(commandWords.length == 2)
-					ret = new PlayCommand(gameType);
-				else
-					controller.setNoPrintGameState();
+			if(gameType != null) {				
+				int size = controller.askBoardSize();
+				int cells = controller.askIniCells(size);
+				int rand = controller.askSeed();
+				
+				ret = new PlayCommand(gameType, size, cells, rand);
 			}
 		}
 		

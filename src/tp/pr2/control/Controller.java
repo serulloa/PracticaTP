@@ -112,4 +112,93 @@ public class Controller {
 	public void printError(String error) {
 		System.err.println(error);
 	}
+	
+	/**
+	 * Método que pide el tamaño del tablero cuando se cambia de tipo de juego.
+	 * 
+	 * @return Un entero con el tamaño.
+	 */
+	public int askBoardSize() {
+		boolean ok = false;
+		String cadena = null;
+		int size = 4;
+		
+		while(!ok) {
+			System.out.print("Please enter the size of the board: ");
+			cadena = in.nextLine();
+			String words[] = cadena.split(" ");
+			
+			if(cadena.isEmpty()) System.out.println("Using the default size of the board: 4");
+			else size = Integer.valueOf(words[0]);
+			
+			if(words.length > 1)
+				System.err.println("Please provide a single positive integer or press return.");
+			else if(size <= 0)
+				System.err.println("The size of the board must be positive.");
+			else
+				ok = true;
+		}
+		
+		return size;
+	}
+	
+	/**
+	 * Método que pide el número de celdas iniciales al cambiar de juego.
+	 * 
+	 * @return Un entero con el número de celdas iniciales.
+	 */
+	public int askIniCells(int size) {
+		boolean ok = false;
+		String line = null;
+		int cells = 2;
+		
+		while(!ok) {
+			System.out.print("Please enter the number of initial cells: ");
+			line = in.nextLine();
+			String words[] = line.split(" ");
+			
+			if(line.isEmpty()) System.out.println("Using the default number of initial cells: 2");
+			else cells = Integer.valueOf(words[0]);
+			
+			if(words.length > 1)
+				System.err.println("Please provide a single positive integer or press return.");
+			else if(cells <= 0)
+				System.err.println("The number of initial dells must be positive.");
+			else if(cells > size*size)
+				System.err.println("The number of initial cells must be less than the number of cells on the board");
+			else
+				ok = true;
+		}
+		
+		return cells;
+	}
+	
+	/**
+	 * Método que pide la semilla para el generador aleatorio de valores al cambiar de juego.
+	 * 
+	 * @return Un entero con la semilla.
+	 */
+	public int askSeed() {
+		boolean ok = false;
+		String line = null;
+		int seed = 1000;
+		
+		while(!ok) {
+			System.out.print("Please enter the seed for the pseudo-random number generator: ");
+			line = in.nextLine();
+			String words[] = line.split(" ");
+			
+			if(line.isEmpty()) System.out.println("Using the default seed for the pseudo-random number generator: 1000");
+			else seed = Integer.valueOf(words[0]);
+			
+			if(words.length > 1)
+				System.err.println("Please provide a single positive integer or press return.");
+			else if(seed <= 0)
+				System.err.println("The size of the board must be positive.");
+			else
+				ok = true;
+		}
+		
+		return seed;
+	}
 }

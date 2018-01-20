@@ -95,7 +95,7 @@ public class Game {
 	}
 	
 	public String toString() {
-		String ret = "";
+		String ret = "\n";
 		
 		ret += board.toString();
 		ret += "best value: " + String.valueOf(highest);
