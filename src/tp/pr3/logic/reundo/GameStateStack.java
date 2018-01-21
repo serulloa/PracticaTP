@@ -44,7 +44,7 @@ public class GameStateStack {
 			index--;
 		}
 		else
-			throw new EmptyStackException("Nothing to redo");
+			throw new EmptyStackException("");
 		
 		return ret;
 	}

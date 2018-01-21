@@ -1,8 +1,10 @@
 package tp.pr3.control.commands;
 
-import tp.pr3.control.Controller;
+import java.util.Scanner;
+
 import tp.pr3.exceptions.UnknownCommandException;
 import tp.pr3.exceptions.UnknownDirectionException;
+import tp.pr3.exceptions.UnknownGameException;
 
 /**
  * @author Sergio Ulloa
@@ -31,18 +33,15 @@ public class CommandParser {
 	 * @param controller Controlador desde el que se invoca
 	 * @return En caso de éxitoevuelve un objeto de la clase comando a la que corresponde la entrada
 	 * 			y, en caso de fallo, devuelve null.
-	 * @throws UnknownCommandException En el caso de que no se pueda parsear como ningún parámentro
-	 * 			existente.
-	 * @throws UnknownDirectionException en el caso de que, habiendose parseado como un comando MOVE,
-	 * 			no se haya encontrado una dirección que coincida.
+	 * @throws Exception En caso de que se produzca un error en el parseo de alguno de los comandos
 	 */
-	public static Command parseCommand(String[] commandWords, Controller controller) 
-			throws UnknownCommandException, UnknownDirectionException {
+	public static Command parseCommand(String[] commandWords, Scanner in) 
+			throws Exception {
 		Command ret = null;
 		
 		try {
 			for(Command com: availableCommands) {
-				Command aux = com.parse(commandWords, controller);
+				Command aux = com.parse(commandWords, in);
 				if(aux != null) {
 					ret = aux;
 					break;
@@ -52,7 +51,7 @@ public class CommandParser {
 			if(ret == null) {
 				throw new UnknownCommandException("Unknown command");
 			}
-		} catch (UnknownDirectionException e) {
+		} catch (UnknownDirectionException | UnknownGameException e) {
 			throw e;
 		}
 		
@@ -60,7 +59,10 @@ public class CommandParser {
 	}
 	
 	/**
-	 * @return Devuelve un String con toda la ayuda disponible en el juego.
+	 * Método que reúne todos los textos de ayuda de los comandos para juntarlos en un
+	 * sólo string
+	 * 
+	 * @return El String con el texto de todos los comandos
 	 */
 	public static String commandHelp() {
 		String ret = "";

@@ -1,6 +1,6 @@
 package tp.pr3.control.commands;
 
-import tp.pr3.control.Controller;
+import tp.pr3.exceptions.ResetCommandException;
 import tp.pr3.logic.multigames.Game;
 
 public class ResetCommand extends NoParamsCommand {
@@ -18,8 +18,8 @@ public class ResetCommand extends NoParamsCommand {
 	// ================================================================================	
 
 	@Override
-	public void execute(Game game, Controller controller) {
+	public boolean execute(Game game) throws ResetCommandException {
 		game.reset();
-		controller.reset();
+		throw new ResetCommandException("Game restarted!");
 	}
 }

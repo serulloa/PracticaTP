@@ -1,6 +1,6 @@
 package tp.pr3.control.commands;
 
-import tp.pr3.control.Controller;
+import tp.pr3.exceptions.ExitCommandException;
 import tp.pr3.logic.multigames.Game;
 
 public class ExitCommand extends NoParamsCommand {
@@ -18,8 +18,9 @@ public class ExitCommand extends NoParamsCommand {
 	// ================================================================================	
 
 	@Override
-	public void execute(Game game, Controller controller) {
+	public boolean execute(Game game) throws ExitCommandException {
 		game.finish();
-		controller.exit();
+		throw new ExitCommandException("Game over");
 	}
+
 }

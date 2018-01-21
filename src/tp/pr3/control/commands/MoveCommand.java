@@ -1,6 +1,7 @@
 package tp.pr3.control.commands;
 
-import tp.pr3.control.Controller;
+import java.util.Scanner;
+
 import tp.pr3.exceptions.UnknownDirectionException;
 import tp.pr3.logic.Direction;
 import tp.pr3.logic.multigames.Game;
@@ -34,12 +35,13 @@ public class MoveCommand extends Command {
 	// ================================================================================	
 
 	@Override
-	public void execute(Game game, Controller controller) {
-		game.move(dir);
+	public boolean execute(Game game) {
+		boolean ret = !game.move(dir);
+		return ret;
 	}
 
 	@Override
-	protected Command parse(String[] commandWords, Controller controller) throws UnknownDirectionException {
+	protected Command parse(String[] commandWords, Scanner in) throws UnknownDirectionException {
 		Command ret = null;
 		
 		if(commandWords[0].equals("MOVE") && commandWords.length == 2) {
@@ -64,9 +66,17 @@ public class MoveCommand extends Command {
 					ret = new MoveCommand(Direction.RIGHT);
 					break;
 				}
+				case "":
+				{
+					throw new UnknownDirectionException("You must specify a direction");
+				}
 				default:
 					throw new UnknownDirectionException("Unknown direction");
 			}
+		}
+		
+		else if(commandWords[0].equals("MOVE") && commandWords.length == 1) {
+			throw new UnknownDirectionException("You must specify a direction");
 		}
 		
 		return ret;

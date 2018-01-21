@@ -1,6 +1,6 @@
 package tp.pr3.control.commands;
 
-import tp.pr3.control.Controller;
+import tp.pr3.exceptions.EmptyStackException;
 import tp.pr3.logic.multigames.Game;
 
 public class RedoCommand extends NoParamsCommand {
@@ -18,11 +18,12 @@ public class RedoCommand extends NoParamsCommand {
 	// ================================================================================
 
 	@Override
-	public void execute(Game game, Controller controller) {
-		boolean ok = game.redo();
-		if(!ok) {
-			controller.setNoPrintGameState();
-			controller.printError("Nothing to redo");
+	public boolean execute(Game game) throws EmptyStackException {
+		try {
+			game.redo();
+			return true;
+		} catch (EmptyStackException e) {
+			throw e;
 		}
 	}
 

@@ -1,6 +1,5 @@
 package tp.pr3.control.commands;
 
-import tp.pr3.control.Controller;
 import tp.pr3.logic.multigames.Game;
 
 public class HelpCommand extends NoParamsCommand {
@@ -18,7 +17,10 @@ public class HelpCommand extends NoParamsCommand {
 	// ================================================================================	
 
 	@Override
-	public void execute(Game game, Controller controller) {
-		controller.help();
+	public boolean execute(Game game) {
+		System.out.println(CommandParser.commandHelp());
+		System.out.println();
+		
+		return true;
 	}
 }

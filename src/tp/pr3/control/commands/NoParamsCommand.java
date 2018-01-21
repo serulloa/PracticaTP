@@ -1,6 +1,6 @@
 package tp.pr3.control.commands;
 
-import tp.pr3.control.Controller;
+import java.util.Scanner;
 
 /**
  * @author Sergio Ulloa
@@ -20,7 +20,7 @@ public abstract class NoParamsCommand extends Command {
 	// ================================================================================
 
 	@Override
-	protected Command parse(String[] commandWords, Controller controller) {
+	protected Command parse(String[] commandWords, Scanner in) {
 		Command ret = null;
 		
 		if(commandWords.length == 1) {

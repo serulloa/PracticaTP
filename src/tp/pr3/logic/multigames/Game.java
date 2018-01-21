@@ -62,8 +62,9 @@ public class Game {
 	 * valor aleatorio
 	 * 
 	 * @param dir Es la dirección del movimiento
+	 * @return Devuelve un booleano con información de si se debe imprimir la partida o no
 	 */
-	public void move(Direction dir) {
+	public boolean move(Direction dir) {
 		if(!losen && !finished) {
 			redoStack = new GameStateStack();
 			undoStack.push(getState());
@@ -87,6 +88,8 @@ public class Game {
 		}
 		else
 			losen = true;
+		
+		return losen || finished;
 	}
 	
 	/**
@@ -126,16 +129,17 @@ public class Game {
 	/**
 	 * Establece el atributo finish a true para indicar la finalización de la
 	 * partida.
+	 * 
+	 * @return Devuelve true
 	 */
-	public void finish() {
+	public boolean finish() {
 		finished = true;
+		return true;
 	}
 	
 	/**
 	 * Deshace el último movimiento que se ha realizado.
 	 * 
-	 * @return 	Devuelve true en caso de que se haya podido deshacer el movimiento y false
-	 * 			en caso contrario
 	 * @throws EmptyStackException Si la pila está vacía.
 	 */
 	public void undo() throws EmptyStackException {
@@ -144,15 +148,13 @@ public class Game {
 			setState(undoStack.pop());
 			redoStack.push(temp);
 		} catch (EmptyStackException e) {
-			throw e;
+			throw new EmptyStackException("Nothing to undo");
 		}
 	}
 	
 	/**
 	 * Rehace el último movimiento que se ha deshecho.
 	 * 
-	 * @return 	Devuelve true en caso de que se haya podido rehacer el movimiento y false
-	 * 			en caso contrario
 	 * @throws EmptyStackException 
 	 */
 	public void redo() throws EmptyStackException {
@@ -161,7 +163,7 @@ public class Game {
 			setState(redoStack.pop());
 			undoStack.push(temp);
 		} catch (EmptyStackException e) {
-			throw e;
+			throw new EmptyStackException("Nothing to redo");
 		}
 	}
 	
