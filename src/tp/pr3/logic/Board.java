@@ -1,5 +1,10 @@
 package tp.pr3.logic;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+
+import tp.pr3.exceptions.SaveFormatException;
 import tp.pr3.logic.multigames.GameRules;
 import tp.util.MyStringUtils;
 
@@ -341,6 +346,68 @@ public class Board {
 	 */
 	public int getBoardSize() {
 		return this.boardSize;
+	}
+
+	/**
+	 * Método que almacena en archivo los valores que hay en el tablero
+	 * 
+	 * @param out Buffer donde se escribirán los datos
+	 * @throws IOException En el caso de que se produzca un error en la escritura
+	 */
+	public void store(BufferedWriter out) throws IOException {
+		for(int i = 0; i < boardSize; i++) {
+			for(int j = 0; j < boardSize; j++) {
+				out.write(board[i][j].toString());
+				if(j < boardSize-1) out.write("\t");
+			}
+			
+			out.newLine();
+		}
+	}
+
+	/**
+	 * Método que carga desde archivo los valores existentes
+	 * 
+	 * @param in Buffer desde donde se leen los datos
+	 * @throws IOException En el caso de que se produzca un error en la lectura
+	 * @throws SaveFormatException 
+	 */
+	public void load(BufferedReader in) throws IOException, SaveFormatException {
+		String line = in.readLine();
+		if (line == null) throw new SaveFormatException("Load failed: invalid file format");
+		
+		String cells[] = line.split("\t");
+		
+		minValue = Integer.valueOf(cells[0]);
+		maxValue = minValue;
+		
+		boardSize = cells.length;
+		
+		for(int i = 0; i < boardSize; i++) {
+			for(int j = 0; j < boardSize; j++) {
+				try {
+					board[i][j].setValue(Integer.valueOf(cells[j]));
+				} catch (NumberFormatException e) {
+					throw new SaveFormatException("Load failed: invalid file format");
+				}
+			}
+			
+			if(i < boardSize-1) {
+				line = in.readLine();
+				if (line == null) throw new SaveFormatException("Load failed: invalid file format");
+				cells = line.split("\t");
+			}
+		}
+		
+		full = true;
+		
+		for(Cell[] row : board) {
+			for(Cell cell : row) {
+				if(cell.getValue() == 0) full = false;
+				if(cell.getValue() < minValue) minValue = cell.getValue();
+				if(cell.getValue() > maxValue) maxValue = cell.getValue();
+			}
+		}
 	}
 	
 }

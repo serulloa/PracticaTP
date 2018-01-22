@@ -4,11 +4,7 @@ import java.util.Scanner;
 
 import tp.pr3.exceptions.UnknownGameException;
 import tp.pr3.logic.multigames.Game;
-import tp.pr3.logic.multigames.GameRules;
 import tp.pr3.logic.multigames.GameType;
-import tp.pr3.logic.multigames.Rules2048;
-import tp.pr3.logic.multigames.RulesFib;
-import tp.pr3.logic.multigames.RulesInverse;
 
 /**
  * @author Sergio Ulloa
@@ -27,11 +23,11 @@ public class PlayCommand extends Command {
 	// ================================================================================
 	
 	public PlayCommand() {
-		super("play <game>", "change game to one of these: original, fib, inverse");
+		super("play <game>", GameType.externaliseAll() + ", allows the user to switch games.\n");
 	}
 	
 	public PlayCommand(GameType gameType) {
-		super("play <game>", "change game to one of these: original, fib, inverse");
+		super("play <game>", GameType.externaliseAll() + ", allows the user to switch games.\n");
 		this.gameType = gameType;
 		this.boardSize = 4;
 		this.initialCells = 2;
@@ -51,31 +47,8 @@ public class PlayCommand extends Command {
 	// ================================================================================
 
 	@Override
-	public boolean execute(Game game) {
-		GameRules rules;
-		
-		switch(gameType) {
-			case ORIG:
-			{
-				rules = new Rules2048();
-				break;
-			}
-			case FIB:
-			{
-				rules = new RulesFib();
-				break;
-			}
-			case INV:
-			{
-				rules = new RulesInverse();
-				break;
-			}
-			default:
-				rules = new Rules2048();
-		}
-		
-		game.changeGame(rules, boardSize, initialCells, randomSeed);
-		
+	public boolean execute(Game game) {		
+		game.changeGame(gameType, boardSize, initialCells, randomSeed);
 		return true;
 	}
 
@@ -83,36 +56,11 @@ public class PlayCommand extends Command {
 	protected Command parse(String[] commandWords, Scanner in) throws UnknownGameException {
 		Command ret = null;
 		
-		if(commandWords[0].equals("PLAY") && commandWords.length == 2) {
-			GameType gameType = null;
+		if(commandWords[0].toUpperCase().equals("PLAY") && commandWords.length == 2) {
+			GameType gameType = GameType.parse(commandWords[1].toLowerCase());
 			
-			switch(commandWords[1]) {
-				case "ORIGINAL":
-				{
-					gameType = GameType.ORIG;
-					break;
-				}
-				case "FIB":
-				{
-					gameType = GameType.FIB;
-					break;
-				}
-				case "INVERSE":
-				{
-					gameType = GameType.INV;
-					break;
-				}
-				case "":
-				{
-					throw new UnknownGameException("You must specify a game type");
-				}
-				default:
-				{
-					throw new UnknownGameException("Unknown game type");
-				}
-			}
-			
-			if(gameType != null) {				
+			if(gameType != null) {
+				System.out.println("*** You have chosen to play the game: " + gameType.toString() + " ***");
 				int size = askBoardSize(in);
 				int cells = askIniCells(size, in);
 				int rand = askSeed(in);
@@ -121,7 +69,7 @@ public class PlayCommand extends Command {
 			}
 		}
 		
-		else if(commandWords[0].equals("PLAY") && commandWords.length == 1) {
+		else if(commandWords[0].toUpperCase().equals("PLAY") && commandWords.length == 1) {
 			throw new UnknownGameException("You must specify a game type");
 		}
 		

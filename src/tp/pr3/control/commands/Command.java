@@ -4,7 +4,10 @@ import java.util.Scanner;
 
 import tp.pr3.exceptions.EmptyStackException;
 import tp.pr3.exceptions.ExitCommandException;
+import tp.pr3.exceptions.FileNotFoundException;
+import tp.pr3.exceptions.InvalidFilenameException;
 import tp.pr3.exceptions.ResetCommandException;
+import tp.pr3.exceptions.SaveFormatException;
 import tp.pr3.exceptions.UnknownDirectionException;
 import tp.pr3.exceptions.UnknownGameException;
 import tp.pr3.logic.multigames.Game;
@@ -50,9 +53,11 @@ public abstract class Command {
 	 * 								error, sino una excepción lógica
 	 * @throws ResetCommandException En caso de que se haya introducido el comando reset, no
 	 * 									es un error, sino una excepción lógica
+	 * @throws SaveFormatException En caso de que se haya introducido el comando load y el fichero
+	 * 								no posea el formato requerido
 	 */
 	public abstract boolean execute(Game game) 
-			throws EmptyStackException, ExitCommandException, ResetCommandException;
+			throws EmptyStackException, ExitCommandException, ResetCommandException, SaveFormatException;
 	
 	/**
 	 * Método que se encarga de hacer el parsing del comando introducido
@@ -64,9 +69,13 @@ public abstract class Command {
 	 * 										dirección desconocida
 	 * @throws UnknownGameException En caso de haber introducido el comando play con un tipo de
 	 * 								juego desconocido
+	 * @throws InvalidFilenameException En caso de haber introducido el comando save con un nombre
+	 * 									de fichero inválido
+	 * @throws FileNotFoundException En caso de haber introducido el comando load con un nombre de
+	 * 									fichero inexistente
 	 */
 	protected abstract Command parse(String[] commandWords, Scanner in) 
-			throws UnknownDirectionException, UnknownGameException;
+			throws UnknownDirectionException, UnknownGameException, InvalidFilenameException, FileNotFoundException;
 	
 	/**
 	 * Método que establece el texto de ayuda del comando this

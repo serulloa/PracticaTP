@@ -17,7 +17,7 @@ public class CommandParser {
 	
 	private static Command[] availableCommands = { new HelpCommand(), new ResetCommand(),
 			new ExitCommand(), new MoveCommand(), new UndoCommand(), new RedoCommand(),
-			new PlayCommand()};
+			new PlayCommand(), new SaveCommand(), new LoadCommand()};
 	
 	// ================================================================================
 	// Métodos

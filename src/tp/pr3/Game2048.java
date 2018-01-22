@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 import tp.pr3.control.Controller;
 import tp.pr3.logic.multigames.Game;
-import tp.pr3.logic.multigames.Rules2048;
+import tp.pr3.logic.multigames.GameType;
 
 /**
  * @author Sergio Ulloa
@@ -16,10 +16,10 @@ public class Game2048 {
 			Game game;
 			
 			if(args.length == 3) {
-				game = new Game(new Rules2048(), Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+				game = new Game(GameType.ORIG, Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
 			}
 			else {
-				game = new Game(new Rules2048(), Integer.parseInt(args[0]), Integer.parseInt(args[1]), 1000);
+				game = new Game(GameType.ORIG, Integer.parseInt(args[0]), Integer.parseInt(args[1]), 1000);
 			}
 			
 			Controller control = new Controller(game, new Scanner(System.in));

@@ -54,7 +54,7 @@ public class Controller {
 			try {
 				
 				command = parseIn();
-				if(command != null) command.execute(game);
+				if(command != null) print = command.execute(game);
 				
 			} catch (ExitCommandException e) {
 				System.err.println(e.getMessage());
@@ -77,7 +77,7 @@ public class Controller {
 	 * @throws Exception En caso de que haya errores en el parseo del comando
 	 */
 	private Command parseIn() throws Exception {
-		String[] commandWords = in.nextLine().toUpperCase().split(" ", -1);
+		String[] commandWords = in.nextLine().split(" ", -1);
 		Command ret = null;
 		
 		try {

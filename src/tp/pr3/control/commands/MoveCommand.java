@@ -44,8 +44,8 @@ public class MoveCommand extends Command {
 	protected Command parse(String[] commandWords, Scanner in) throws UnknownDirectionException {
 		Command ret = null;
 		
-		if(commandWords[0].equals("MOVE") && commandWords.length == 2) {
-			switch (commandWords[1]) {
+		if(commandWords[0].toUpperCase().equals("MOVE") && commandWords.length == 2) {
+			switch (commandWords[1].toUpperCase()) {
 				case "UP":
 				{
 					ret = new MoveCommand(Direction.UP);
@@ -75,7 +75,7 @@ public class MoveCommand extends Command {
 			}
 		}
 		
-		else if(commandWords[0].equals("MOVE") && commandWords.length == 1) {
+		else if(commandWords[0].toUpperCase().equals("MOVE") && commandWords.length == 1) {
 			throw new UnknownDirectionException("You must specify a direction");
 		}
 		

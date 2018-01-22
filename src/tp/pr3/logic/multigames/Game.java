@@ -1,8 +1,12 @@
 package tp.pr3.logic.multigames;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.Random;
 
 import tp.pr3.exceptions.EmptyStackException;
+import tp.pr3.exceptions.SaveFormatException;
 import tp.pr3.logic.Board;
 import tp.pr3.logic.Direction;
 import tp.pr3.logic.MoveResults;
@@ -28,13 +32,13 @@ public class Game {
 	private boolean finished;			// Partida acabada
 	private GameStateStack undoStack;	// Movimientos para deshacer
 	private GameStateStack redoStack;	// Movimientos para rehacer
-	private GameRules currentRules;		// Guarda las reglas del juego actual
+	private GameType currentGame;		// Guarda las reglas del juego actual
 	
 	// ================================================================================
 	// Constructores
 	// ================================================================================
 	
-	public Game(GameRules rules, int size, int initCells, long seed) {
+	public Game(GameType game, int size, int initCells, long seed) {
 		this.size = size;
 		this.initCells = initCells;
 		this.myRandom = new Random(seed);
@@ -48,9 +52,9 @@ public class Game {
 		undoStack = new GameStateStack();
 		redoStack = new GameStateStack();
 		
-		this.currentRules = rules;
-		this.currentRules.initBoard(this.board, initCells, this.myRandom);
-		this.highest = currentRules.getWinValue(this.board);
+		this.currentGame = game;
+		this.currentGame.getRules().initBoard(this.board, initCells, this.myRandom);
+		this.highest = currentGame.getRules().getWinValue(this.board);
 	}
 	
 	// ================================================================================
@@ -69,13 +73,13 @@ public class Game {
 			redoStack = new GameStateStack();
 			undoStack.push(getState());
 			
-			MoveResults results = board.executeMove(dir, currentRules);
+			MoveResults results = board.executeMove(dir, currentGame.getRules());
 			
 			score += results.getPoints();
-			highest = currentRules.getWinValue(board);
-			if(currentRules.win(board)) finished = true;
+			highest = currentGame.getRules().getWinValue(board);
+			if(currentGame.getRules().win(board)) finished = true;
 			
-			if(results.isMoved()) currentRules.addNewCell(board, myRandom);
+			if(results.isMoved()) currentGame.getRules().addNewCell(board, myRandom);
 			else {
 				try {
 					undoStack.pop();
@@ -84,7 +88,7 @@ public class Game {
 				}
 			}
 			
-			if(currentRules.lose(board)) losen = true;
+			if(currentGame.getRules().lose(board)) losen = true;
 		}
 		else
 			losen = true;
@@ -101,8 +105,8 @@ public class Game {
 		losen = false;
 		finished = false;
 		
-		currentRules.initBoard(board, initCells, myRandom);
-		highest = currentRules.getWinValue(board);
+		currentGame.getRules().initBoard(board, initCells, myRandom);
+		highest = currentGame.getRules().getWinValue(board);
 	}
 	
 	public String toString() {
@@ -195,8 +199,8 @@ public class Game {
 	 * @param initialCells Número de celdas iniciales.
 	 * @param randomSeed Semilla de aleatoriedad.
 	 */
-	public void changeGame(GameRules rules, int boardSize, int initialCells, int randomSeed) {
-		this.currentRules = rules;
+	public void changeGame(GameType game, int boardSize, int initialCells, int randomSeed) {
+		this.currentGame = game;
 		this.size = boardSize;
 		this.initCells = initialCells;
 		this.myRandom = new Random(randomSeed);
@@ -206,11 +210,55 @@ public class Game {
 		losen = false;
 		finished = false;
 		
-		currentRules.initBoard(board, initCells, myRandom);
-		highest = currentRules.getWinValue(board);
+		currentGame.getRules().initBoard(board, initCells, myRandom);
+		highest = currentGame.getRules().getWinValue(board);
 		
 		// Inicializamos los GameStateStacks
 		undoStack = new GameStateStack();
 		redoStack = new GameStateStack();
 	}
+
+	/**
+	 * Método que guarda en archivo una partida y a su vez llama al método store de Board
+	 * 
+	 * @param out Buffer donde se escribirán los datos
+	 * @throws IOException En caso de que se produzca un error al escribir en fichero
+	 */
+	public void store(BufferedWriter out) throws IOException {
+		board.store(out);
+		out.write(this.initCells + "\t" +  this.score + "\t" + this.currentGame.externalise());
+	}
+
+	/**
+	 * Método que carga de archivo una partida y a su vez llama al método load de Board
+	 * 
+	 * @param in Buffer del que se lee los datos
+	 * @return Devuelve el tipo de juego para que el método execute() de LoadCommand pueda mostrar
+	 * 			un mensaje de confirmación
+	 * @throws IOException En caso de que se produzca un error en la lectura de fichero
+	 * @throws SaveFormatException En caso de que el archivo tenga un formato inválido
+	 */
+	public GameType load(BufferedReader in) throws IOException, SaveFormatException {
+		board.load(in);
+		String line = in.readLine();
+		String fields[] = line.split("\t");
+		
+		currentGame = GameType.parse(fields[2]);
+		if (currentGame == null) throw new SaveFormatException("Load failed: invalid file format");
+		
+		size = board.getBoardSize();
+		initCells = Integer.valueOf(fields[0]);
+		score = Integer.valueOf(fields[1]);
+		
+		losen = false;
+		finished = false;
+		
+		highest = currentGame.getRules().getWinValue(board);
+		
+		undoStack = new GameStateStack();
+		redoStack = new GameStateStack();
+		
+		return currentGame;
+	}
+	
 }

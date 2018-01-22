@@ -24,7 +24,7 @@ public abstract class NoParamsCommand extends Command {
 		Command ret = null;
 		
 		if(commandWords.length == 1) {
-			switch (commandWords[0]) {
+			switch (commandWords[0].toUpperCase()) {
 				case "EXIT":
 				{
 					ret = new ExitCommand();
