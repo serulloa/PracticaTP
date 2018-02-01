@@ -1,5 +1,6 @@
 package tp.pr3.control.commands;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 import tp.pr3.exceptions.EmptyStackException;
@@ -7,7 +8,7 @@ import tp.pr3.exceptions.ExitCommandException;
 import tp.pr3.exceptions.FileNotFoundException;
 import tp.pr3.exceptions.InvalidFilenameException;
 import tp.pr3.exceptions.ResetCommandException;
-import tp.pr3.exceptions.SaveFormatException;
+import tp.pr3.exceptions.SaveException;
 import tp.pr3.exceptions.UnknownDirectionException;
 import tp.pr3.exceptions.UnknownGameException;
 import tp.pr3.logic.multigames.Game;
@@ -53,11 +54,13 @@ public abstract class Command {
 	 * 								error, sino una excepción lógica
 	 * @throws ResetCommandException En caso de que se haya introducido el comando reset, no
 	 * 									es un error, sino una excepción lógica
-	 * @throws SaveFormatException En caso de que se haya introducido el comando load y el fichero
-	 * 								no posea el formato requerido
+	 * @throws java.io.FileNotFoundException En caso de que no se encuentre el fichero a cargar
+	 * @throws IOException En caso de que se produzca un error al cargar la partida
+	 * @throws SaveException En caso de que se haya introducido el comando load o save y se haya
+	 * 							producido un error
 	 */
 	public abstract boolean execute(Game game) 
-			throws EmptyStackException, ExitCommandException, ResetCommandException, SaveFormatException;
+			throws EmptyStackException, ExitCommandException, ResetCommandException, SaveException, java.io.FileNotFoundException, IOException;
 	
 	/**
 	 * Método que se encarga de hacer el parsing del comando introducido

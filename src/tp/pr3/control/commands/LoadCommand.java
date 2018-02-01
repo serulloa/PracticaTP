@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 import tp.pr3.exceptions.FileNotFoundException;
 import tp.pr3.exceptions.InvalidFilenameException;
-import tp.pr3.exceptions.SaveFormatException;
+import tp.pr3.exceptions.SaveException;
 import tp.pr3.logic.multigames.Game;
 import tp.pr3.logic.multigames.GameType;
 import tp.pr3.util.MyStringUtils;
@@ -44,7 +44,7 @@ public class LoadCommand extends Command {
 	// ================================================================================
 
 	@Override
-	public boolean execute(Game game) throws SaveFormatException {
+	public boolean execute(Game game) throws SaveException, IOException {
 		boolean ret = false;
 		
 		try (BufferedReader in = new BufferedReader(new FileReader(filename))) {
@@ -56,15 +56,15 @@ public class LoadCommand extends Command {
 				ret = true;
 			}
 			else {
-				throw new SaveFormatException("Load failed: invalid file format");
+				throw new SaveException("Load failed: invalid file format");
 			}
 			
 		} catch (java.io.FileNotFoundException e) {
-			System.err.println("File not found");
+			throw e;
 		} catch (IOException e) {
-			System.err.println("Se ha producido un error al cargar la partida");
+			throw new SaveException("Se ha producido un error al cargar la partida");
 		} catch (NumberFormatException e) {
-			e.printStackTrace();
+			throw e;
 		}
 		
 		return ret;

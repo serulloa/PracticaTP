@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Random;
 
 import tp.pr3.exceptions.EmptyStackException;
-import tp.pr3.exceptions.SaveFormatException;
+import tp.pr3.exceptions.SaveException;
 import tp.pr3.logic.Board;
 import tp.pr3.logic.Direction;
 import tp.pr3.logic.MoveResults;
@@ -67,8 +67,10 @@ public class Game {
 	 * 
 	 * @param dir Es la dirección del movimiento
 	 * @return Devuelve un booleano con información de si se debe imprimir la partida o no
+	 * @throws EmptyStackException si hay algún error al eliminar del stack undo 
+	 * 								el movimiento no realizado
 	 */
-	public boolean move(Direction dir) {
+	public boolean move(Direction dir) throws EmptyStackException {
 		if(!losen && !finished) {
 			redoStack = new GameStateStack();
 			undoStack.push(getState());
@@ -84,7 +86,7 @@ public class Game {
 				try {
 					undoStack.pop();
 				} catch (EmptyStackException e) {
-					
+					throw e;
 				}
 			}
 			
@@ -236,15 +238,15 @@ public class Game {
 	 * @return Devuelve el tipo de juego para que el método execute() de LoadCommand pueda mostrar
 	 * 			un mensaje de confirmación
 	 * @throws IOException En caso de que se produzca un error en la lectura de fichero
-	 * @throws SaveFormatException En caso de que el archivo tenga un formato inválido
+	 * @throws SaveException En caso de que el archivo tenga un formato inválido
 	 */
-	public GameType load(BufferedReader in) throws IOException, SaveFormatException {
+	public GameType load(BufferedReader in) throws IOException, SaveException {
 		board.load(in);
 		String line = in.readLine();
 		String fields[] = line.split("\t");
 		
 		currentGame = GameType.parse(fields[2]);
-		if (currentGame == null) throw new SaveFormatException("Load failed: invalid file format");
+		if (currentGame == null) throw new SaveException("Load failed: invalid file format");
 		
 		size = board.getBoardSize();
 		initCells = Integer.valueOf(fields[0]);

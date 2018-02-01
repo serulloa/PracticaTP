@@ -62,6 +62,8 @@ public class Controller {
 				print = false;
 			} catch (ResetCommandException e) {
 				System.err.println(e.getMessage());
+			} catch (java.io.FileNotFoundException e) {
+				System.err.println("File not found");
 			} catch (Exception e) {
 				System.err.println(e.getMessage());
 				print = false;

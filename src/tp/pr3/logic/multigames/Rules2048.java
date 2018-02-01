@@ -40,7 +40,7 @@ public class Rules2048 implements GameRules {
 	public int merge(Cell self, Cell other) {
 		int ret = 0;
 		
-		if(self.getValue() == other.getValue()) {
+		if(canMergeNeighbours(self, other)) {
 			ret = self.getValue() + other.getValue();
 			
 			self.setValue(ret);

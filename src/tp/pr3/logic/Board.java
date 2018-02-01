@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-import tp.pr3.exceptions.SaveFormatException;
+import tp.pr3.exceptions.SaveException;
 import tp.pr3.logic.multigames.GameRules;
 import tp.util.MyStringUtils;
 
@@ -370,11 +370,11 @@ public class Board {
 	 * 
 	 * @param in Buffer desde donde se leen los datos
 	 * @throws IOException En el caso de que se produzca un error en la lectura
-	 * @throws SaveFormatException 
+	 * @throws SaveException 
 	 */
-	public void load(BufferedReader in) throws IOException, SaveFormatException {
+	public void load(BufferedReader in) throws IOException, SaveException {
 		String line = in.readLine();
-		if (line == null) throw new SaveFormatException("Load failed: invalid file format");
+		if (line == null) throw new SaveException("Load failed: invalid file format");
 		
 		String cells[] = line.split("\t");
 		
@@ -388,13 +388,13 @@ public class Board {
 				try {
 					board[i][j].setValue(Integer.valueOf(cells[j]));
 				} catch (NumberFormatException e) {
-					throw new SaveFormatException("Load failed: invalid file format");
+					throw new SaveException("Load failed: invalid file format");
 				}
 			}
 			
 			if(i < boardSize-1) {
 				line = in.readLine();
-				if (line == null) throw new SaveFormatException("Load failed: invalid file format");
+				if (line == null) throw new SaveException("Load failed: invalid file format");
 				cells = line.split("\t");
 			}
 		}

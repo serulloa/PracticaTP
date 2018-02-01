@@ -39,7 +39,7 @@ public class RulesInverse implements GameRules {
 	public int merge(Cell self, Cell other) {
 		int ret = 0;
 		
-		if(self.getValue() == other.getValue()) {
+		if(canMergeNeighbours(self, other)) {
 			ret = self.getValue();
 			
 			self.setValue(self.getValue()/2);

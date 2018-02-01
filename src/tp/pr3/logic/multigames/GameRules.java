@@ -120,4 +120,8 @@ public interface GameRules {
 		for(Position pos : positions)
 			addNewCellAt(board, pos, rand);
 	}
+	
+	default boolean canMergeNeighbours(Cell cell1, Cell cell2) {
+		return cell1.getValue() == cell2.getValue();
+	}
 }

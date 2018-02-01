@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import tp.pr3.exceptions.InvalidFilenameException;
+import tp.pr3.exceptions.SaveException;
 import tp.pr3.logic.multigames.Game;
 import tp.pr3.util.MyStringUtils;
 
@@ -41,7 +42,7 @@ public class SaveCommand extends Command {
 	// ================================================================================
 	
 	@Override
-	public boolean execute(Game game) {
+	public boolean execute(Game game) throws SaveException {
 		try(BufferedWriter out = new BufferedWriter(new FileWriter(filename))) {
 			out.write("This file stores a saved 2048 game");
 			out.newLine();
@@ -49,7 +50,7 @@ public class SaveCommand extends Command {
 			
 			System.out.println("Game successfully saved to file; use load command to reload it.");
 		} catch (IOException e) {
-			System.err.println("Se ha producido un error al guardar la partida");
+			throw new SaveException("Se ha producido un error al guardar la partida");
 		}
 		
 		return false;

@@ -2,6 +2,7 @@ package tp.pr3.control.commands;
 
 import java.util.Scanner;
 
+import tp.pr3.exceptions.EmptyStackException;
 import tp.pr3.exceptions.UnknownDirectionException;
 import tp.pr3.logic.Direction;
 import tp.pr3.logic.multigames.Game;
@@ -35,9 +36,14 @@ public class MoveCommand extends Command {
 	// ================================================================================	
 
 	@Override
-	public boolean execute(Game game) {
-		boolean ret = !game.move(dir);
-		return ret;
+	public boolean execute(Game game) throws EmptyStackException {
+		boolean ret;
+		try {
+			ret = !game.move(dir);
+			return ret;
+		} catch (EmptyStackException e) {
+			throw e;
+		}
 	}
 
 	@Override
